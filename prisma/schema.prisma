@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String      @id @default(uuid())
+  email        String      @unique
+  passwordHash String
+  name         String
+  role         String      @default("member") // "manager" | "member"
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  ownedProjects     Project[]             @relation("ProjectOwner")
+  projectMemberships ProjectMember[]
+  taskAssignments   TaskAssignee[]
+  createdTasks      Task[]                @relation("TaskCreator")
+  activities        TaskActivity[]
+  dismissedAlerts   TaskAlertDismissal[]
+
+  @@map("users")
+}
+
+model Project {
+  id          String          @id @default(uuid())
+  key         String          @unique // e.g. "ACME", "ALPHA"
+  name        String
+  description String?
+  ownerId     String
+  owner       User            @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+  isArchived  Boolean         @default(false)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  members     ProjectMember[]
+  tasks       Task[]
+
+  @@map("projects")
+}
+
+model ProjectMember {
+  id        String   @id @default(uuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([projectId, userId])
+  @@map("project_members")
+}
+
+model Task {
+  id             String          @id @default(uuid())
+  taskNumber     Int             // e.g. 1, 2, 3 within project
+  key            String          @unique // e.g. "ACME-1"
+  projectId      String
+  project        Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title          String
+  description    String?
+  priority       String          @default("medium") // "low" | "medium" | "high" | "urgent"
+  status         String          @default("Backlog") // "Backlog" | "In Progress" | "In Review" | "Done" | "Blocked"
+  previousStatus String?         // To restore when unblocking: "In Progress" | "In Review"
+  dueDate        DateTime?
+  completedAt    DateTime?
+  createdById    String
+  createdBy      User            @relation("TaskCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  assignees      TaskAssignee[]
+  activities     TaskActivity[]
+  alertDismissals TaskAlertDismissal[]
+
+  // Self-referential dependencies:
+  // tasks that block this task:
+  blockedBy      TaskDependency[] @relation("BlockedTask")
+  // tasks that this task blocks:
+  blocks         TaskDependency[] @relation("BlockerTask")
+
+  @@index([projectId, status])
+  @@index([dueDate])
+  @@map("tasks")
+}
+
+model TaskAssignee {
+  id         String   @id @default(uuid())
+  taskId     String
+  task       Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignedAt DateTime @default(now())
+
+  @@unique([taskId, userId])
+  @@index([userId])
+  @@map("task_assignees")
+}
+
+model TaskDependency {
+  id          String   @id @default(uuid())
+  taskId      String   // The task that is blocked
+  task        Task     @relation("BlockedTask", fields: [taskId], references: [id], onDelete: Cascade)
+  blockedById String   // The task that blocks it
+  blockedBy   Task     @relation("BlockerTask", fields: [blockedById], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([taskId, blockedById])
+  @@map("task_dependencies")
+}
+
+model TaskActivity {
+  id        String   @id @default(uuid())
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  type      String   // "created" | "field_change" | "status_change" | "assignment" | "unassignment" | "comment" | "dependency_add" | "dependency_remove"
+  field     String?  // e.g. "title", "priority", "status", "dueDate", "assignee", "blocker"
+  oldValue  String?
+  newValue  String?
+  comment   String?
+  createdAt DateTime @default(now())
+
+  @@index([taskId, createdAt])
+  @@map("task_activities")
+}
+
+model TaskAlertDismissal {
+  id                 String   @id @default(uuid())
+  taskId             String
+  task               Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId             String
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dueDateAtDismissal DateTime?
+  dismissedAt        DateTime @default(now())
+
+  @@unique([taskId, userId])
+  @@map("task_alert_dismissals")
+}
