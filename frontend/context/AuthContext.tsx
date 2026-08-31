@@ -15,6 +15,7 @@ interface AuthContextType {
   alertCount: number;
   login: (email: string, password?: string) => Promise<{ success: boolean; error?: string }>;
   signup: (name: string, email: string, password: string, role: 'manager' | 'member') => Promise<{ success: boolean; error?: string }>;
+  googleLogin: (email?: string, name?: string, role?: 'manager' | 'member', googleToken?: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   switchUser: (email: string) => Promise<void>;
   refreshAlerts: () => Promise<void>;
@@ -105,6 +106,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const googleLogin = async (
+    email = 'google.user@company.com',
+    name = 'Alex Morgan',
+    role: 'manager' | 'member' = 'manager',
+    googleToken?: string
+  ) => {
+    try {
+      const res = await fetch('/api/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name, role, googleToken }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { success: false, error: data.error || 'Google Login failed' };
+      }
+      setUser(data.user);
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Network error' };
+    }
+  };
+
   const logout = async () => {
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
@@ -126,6 +150,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         alertCount,
         login,
         signup,
+        googleLogin,
         logout,
         switchUser,
         refreshAlerts,
