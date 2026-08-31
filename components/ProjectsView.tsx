@@ -98,42 +98,42 @@ export default function ProjectsView({ onSelectProject }: ProjectsViewProps) {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
-      {/* Header */}
+      {/* Header & Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center space-x-2">
-            <span>Client Projects</span>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-700 font-mono font-medium">
+          <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white flex items-center space-x-2.5">
+            <span>Client Projects Portfolio</span>
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono">
               {projects.length}
             </span>
           </h1>
-          <p className="text-xs text-slate-500 mt-1">
-            {user?.role === 'manager'
-              ? 'Full client portfolio management (create, configure team, archive).'
-              : 'Client engagements you are actively assigned to.'}
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Manage client retainers, configure team assignments, and track project completion.
           </p>
         </div>
 
         <div className="flex items-center space-x-3">
-          {/* Show Archived Toggle */}
-          <label className="flex items-center space-x-2 text-xs text-slate-600 cursor-pointer bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm">
-            <input
-              type="checkbox"
-              checked={showArchived}
-              onChange={(e) => setShowArchived(e.target.checked)}
-              className="rounded text-indigo-600 focus:ring-indigo-500 h-4 w-4"
-            />
-            <span>Show Archived</span>
-          </label>
+          {/* Archived Toggle */}
+          <button
+            onClick={() => setShowArchived(!showArchived)}
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition-all flex items-center space-x-1.5 ${
+              showArchived
+                ? 'bg-slate-900 text-white border-slate-900 dark:bg-slate-700 dark:border-slate-600'
+                : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
+            }`}
+          >
+            <Archive className="w-3.5 h-3.5" />
+            <span>{showArchived ? 'Showing Archived' : 'Show Archived'}</span>
+          </button>
 
-          {/* New Project Button (Manager Only - Goal 1) */}
+          {/* Create Project Button (Manager Only) */}
           {user?.role === 'manager' && (
             <button
               onClick={() => setIsCreateOpen(true)}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-md shadow-indigo-600/30 transition-all flex items-center space-x-2"
+              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-600/30 transition-all flex items-center space-x-1.5"
             >
               <Plus className="w-4 h-4" />
-              <span>New Project</span>
+              <span>New Client Project</span>
             </button>
           )}
         </div>
@@ -161,21 +161,21 @@ export default function ProjectsView({ onSelectProject }: ProjectsViewProps) {
           {projects.map((project) => (
             <div
               key={project.id}
-              className={`bg-white rounded-2xl border transition-all duration-200 flex flex-col justify-between shadow-sm hover:shadow-md ${
+              className={`bg-white dark:bg-slate-900 rounded-2xl border transition-all duration-200 flex flex-col justify-between shadow-sm hover:shadow-md ${
                 project.isArchived
-                  ? 'border-slate-300 opacity-75 bg-slate-50/60'
-                  : 'border-slate-200/90 hover:border-indigo-300'
+                  ? 'border-slate-300 dark:border-slate-800 opacity-75 bg-slate-50/60 dark:bg-slate-900/40'
+                  : 'border-slate-200/90 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-500'
               }`}
             >
               <div className="p-5">
                 {/* Top Row: Key Badge + Archive status */}
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center space-x-2">
-                    <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200">
+                    <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
                       {project.key}
                     </span>
                     {project.isArchived && (
-                      <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-600">
+                      <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
                         Archived
                       </span>
                     )}
@@ -185,14 +185,14 @@ export default function ProjectsView({ onSelectProject }: ProjectsViewProps) {
                     <div className="flex items-center space-x-1">
                       <button
                         onClick={() => setActiveMembersProject(project)}
-                        className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-slate-100 rounded-lg transition-colors"
+                        className="p-1.5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
                         title="Manage Project Team"
                       >
                         <Users className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleToggleArchive(project.id, project.isArchived)}
-                        className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-slate-100 rounded-lg transition-colors"
+                        className="p-1.5 text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
                         title={project.isArchived ? 'Restore Project' : 'Archive Project'}
                       >
                         {project.isArchived ? (
@@ -208,35 +208,35 @@ export default function ProjectsView({ onSelectProject }: ProjectsViewProps) {
                 {/* Project Title & Description */}
                 <h3
                   onClick={() => onSelectProject(project.id)}
-                  className="text-base font-bold text-slate-900 hover:text-indigo-600 transition-colors cursor-pointer"
+                  className="text-base font-bold text-slate-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer"
                 >
                   {project.name}
                 </h3>
-                <p className="text-xs text-slate-500 mt-1 line-clamp-2 min-h-[32px]">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 min-h-[32px]">
                   {project.description || 'No description provided.'}
                 </p>
 
                 {/* Stats row */}
-                <div className="grid grid-cols-3 gap-2 mt-4 p-3 bg-slate-50 rounded-xl text-center border border-slate-100">
+                <div className="grid grid-cols-3 gap-2 mt-4 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-center border border-slate-100 dark:border-slate-800">
                   <div>
-                    <div className="text-[10px] text-slate-400 font-medium">Open</div>
-                    <div className="text-sm font-bold text-slate-800">{project.stats.openTasks}</div>
+                    <div className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">Open</div>
+                    <div className="text-sm font-bold text-slate-800 dark:text-slate-200">{project.stats.openTasks}</div>
                   </div>
                   <div>
-                    <div className="text-[10px] text-rose-500 font-medium">Overdue</div>
-                    <div className={`text-sm font-bold ${project.stats.overdueTasks > 0 ? 'text-rose-600' : 'text-slate-400'}`}>
+                    <div className="text-[10px] text-rose-500 dark:text-rose-400 font-medium">Overdue</div>
+                    <div className={`text-sm font-bold ${project.stats.overdueTasks > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-400 dark:text-slate-600'}`}>
                       {project.stats.overdueTasks}
                     </div>
                   </div>
                   <div>
-                    <div className="text-[10px] text-emerald-600 font-medium">Done</div>
-                    <div className="text-sm font-bold text-emerald-600">{project.stats.doneTasks}</div>
+                    <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">Done</div>
+                    <div className="text-sm font-bold text-emerald-600 dark:text-emerald-400">{project.stats.doneTasks}</div>
                   </div>
                 </div>
 
                 {/* Team Members Chips */}
-                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-                  <div className="flex items-center space-x-1 text-xs text-slate-500">
+                <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                  <div className="flex items-center space-x-1 text-xs text-slate-500 dark:text-slate-400">
                     <Users className="w-3.5 h-3.5 text-slate-400" />
                     <span>{project.members.length} members</span>
                   </div>
@@ -245,13 +245,13 @@ export default function ProjectsView({ onSelectProject }: ProjectsViewProps) {
                       <div
                         key={m.id}
                         title={m.user.name}
-                        className="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-gradient-to-tr from-indigo-500 to-slate-700 text-white text-[10px] font-bold flex items-center justify-center uppercase shadow-sm"
+                        className="inline-block h-6 w-6 rounded-full ring-2 ring-white dark:ring-slate-900 bg-gradient-to-tr from-indigo-500 to-slate-700 text-white text-[10px] font-bold flex items-center justify-center uppercase shadow-sm"
                       >
                         {m.user.name.charAt(0)}
                       </div>
                     ))}
                     {project.members.length > 4 && (
-                      <div className="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-slate-200 text-slate-600 text-[9px] font-bold flex items-center justify-center">
+                      <div className="inline-block h-6 w-6 rounded-full ring-2 ring-white dark:ring-slate-900 bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[9px] font-bold flex items-center justify-center">
                         +{project.members.length - 4}
                       </div>
                     )}
@@ -259,13 +259,13 @@ export default function ProjectsView({ onSelectProject }: ProjectsViewProps) {
                 </div>
               </div>
 
-              {/* Bottom Action Footer */}
+              {/* View Tasks Footer Action */}
               <div
                 onClick={() => onSelectProject(project.id)}
-                className="px-5 py-3 bg-slate-50/80 hover:bg-indigo-50/50 border-t border-slate-100 rounded-b-2xl flex items-center justify-between text-xs font-semibold text-indigo-600 cursor-pointer transition-colors"
+                className="px-5 py-3 bg-slate-50/70 dark:bg-slate-800/60 border-t border-slate-100 dark:border-slate-800 rounded-b-2xl flex items-center justify-between text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 transition-colors cursor-pointer group"
               >
-                <span>Open Project Tasks ({project.stats.totalTasks})</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>Explore Project Tasks</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
           ))}

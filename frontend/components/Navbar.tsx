@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
 import {
   LayoutDashboard,
   FolderKanban,
@@ -14,6 +15,8 @@ import {
   ChevronDown,
   Sparkles,
   Layers,
+  Sun,
+  Moon,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -56,6 +59,7 @@ const DEMO_USERS = [
 
 export default function Navbar({ activeTab, setActiveTab, setSelectedProjectId }: NavbarProps) {
   const { user, logout, switchUser, alertCount } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleTabClick = (tab: 'dashboard' | 'projects' | 'tasks' | 'my-tasks' | 'alerts') => {
@@ -66,7 +70,7 @@ export default function Navbar({ activeTab, setActiveTab, setSelectedProjectId }
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-md border-b border-slate-800/80 text-white shadow-lg">
+    <header className="sticky top-0 z-40 bg-slate-900/95 dark:bg-slate-950/95 backdrop-blur-md border-b border-slate-800/80 dark:border-slate-800/90 text-white shadow-lg transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo & Title */}
@@ -91,7 +95,7 @@ export default function Navbar({ activeTab, setActiveTab, setSelectedProjectId }
           </div>
 
           {/* Navigation Tabs */}
-          <nav className="hidden md:flex items-center space-x-1.5 bg-slate-950/40 p-1 rounded-xl border border-slate-800/60">
+          <nav className="hidden md:flex items-center space-x-1.5 bg-slate-950/40 dark:bg-slate-900/60 p-1 rounded-xl border border-slate-800/60">
             <button
               onClick={() => handleTabClick('dashboard')}
               className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
@@ -158,8 +162,21 @@ export default function Navbar({ activeTab, setActiveTab, setSelectedProjectId }
             </button>
           </nav>
 
-          {/* User Profile & Demo Switcher */}
-          <div className="flex items-center space-x-3">
+          {/* User Profile, Theme Toggle & Demo Switcher */}
+          <div className="flex items-center space-x-2.5 sm:space-x-3">
+            {/* Dark/Light Mode Switcher Button */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-amber-300 dark:text-amber-400 border border-slate-700/80 shadow-sm transition-all flex items-center justify-center"
+              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-4 h-4 text-amber-300 animate-in spin-in-180 duration-200" />
+              ) : (
+                <Moon className="w-4 h-4 text-indigo-300 animate-in spin-in-180 duration-200" />
+              )}
+            </button>
+
             {/* Fast Demo Role Switcher Dropdown */}
             <div className="relative">
               <button
@@ -168,7 +185,7 @@ export default function Navbar({ activeTab, setActiveTab, setSelectedProjectId }
                 title="Switch demo account"
               >
                 <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                <span className="font-semibold">Switch Role</span>
+                <span className="font-semibold hidden sm:inline">Switch Role</span>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
               </button>
 
@@ -228,7 +245,7 @@ export default function Navbar({ activeTab, setActiveTab, setSelectedProjectId }
             </div>
 
             {/* Active User Badge & Logout */}
-            <div className="flex items-center space-x-2.5 pl-3 border-l border-slate-800">
+            <div className="flex items-center space-x-2.5 pl-2.5 sm:pl-3 border-l border-slate-800">
               <div className="flex flex-col text-right">
                 <span className="text-xs font-bold text-slate-200">{user?.name?.split(' ')[0]}</span>
                 <span className="text-[10px] text-slate-400 font-medium capitalize flex items-center justify-end">

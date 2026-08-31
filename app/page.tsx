@@ -22,7 +22,7 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-900 dark:bg-slate-950 flex items-center justify-center">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-400"></div>
       </div>
     );
@@ -53,8 +53,8 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
-      {/* Top Navbar with live badge and role switcher */}
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-200">
+      {/* Top Navbar with live badge, theme toggle and role switcher */}
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -91,11 +91,11 @@ export default function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+      <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-4 text-center text-xs text-slate-500 dark:text-slate-400 transition-colors">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>PulseTrack Services Portfolio & Task Lifecycle System</span>
-          <span className="text-[11px] text-slate-400">
-            Assignment 01 • Built with Next.js, TypeScript, Tailwind, Prisma & SQLite
+          <span className="text-[11px] text-slate-400 dark:text-slate-500">
+            Assignment 01 • Built with Next.js, TypeScript, Tailwind, Prisma & PostgreSQL
           </span>
         </div>
       </footer>

@@ -74,7 +74,7 @@ export default function DashboardView({ onNavigateToTasks, onNavigateToAlerts }:
     return (
       <div className="flex flex-col items-center justify-center py-28 space-y-3">
         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
-        <span className="text-xs font-semibold text-slate-500">Loading Portfolio Analytics...</span>
+        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Loading Portfolio Analytics...</span>
       </div>
     );
   }
@@ -85,13 +85,13 @@ export default function DashboardView({ onNavigateToTasks, onNavigateToAlerts }:
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
       {/* Hero Welcome Banner */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-7 text-white shadow-2xl border border-slate-800 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+      <div className="relative overflow-hidden bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 dark:from-slate-900 dark:via-slate-950 dark:to-indigo-950 rounded-3xl p-7 text-white shadow-2xl border border-slate-800 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
         <div className="relative z-10 space-y-2">
           <div className="inline-flex items-center space-x-2 px-3 py-1 bg-indigo-500/20 border border-indigo-400/30 rounded-full text-xs font-bold text-indigo-300">
             <Zap className="w-3.5 h-3.5 text-amber-400" />
             <span>Executive Portfolio Overview</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
             Client Services Operations Hub
           </h1>
           <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
@@ -118,77 +118,77 @@ export default function DashboardView({ onNavigateToTasks, onNavigateToAlerts }:
         {/* Open Tasks */}
         <div
           onClick={() => onNavigateToTasks()}
-          className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm hover:shadow-md transition-all cursor-pointer group hover:border-indigo-300 flex flex-col justify-between"
+          className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200/90 dark:border-slate-800 shadow-sm hover:shadow-md transition-all cursor-pointer group hover:border-indigo-300 dark:hover:border-indigo-500 flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Open Tasks</span>
-            <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 group-hover:scale-110 transition-transform">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Open Tasks</span>
+            <div className="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform">
               <Layers className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-4 flex items-baseline justify-between">
-            <span className="text-3xl font-black text-slate-900 tracking-tight">{stats.metrics.openTasks}</span>
-            <span className="text-xs font-bold text-indigo-600 group-hover:underline flex items-center">
+            <span className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{stats.metrics.openTasks}</span>
+            <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 group-hover:underline flex items-center">
               View list →
             </span>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1 font-medium">Across active engagements</p>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 font-medium">Across active engagements</p>
         </div>
 
         {/* Overdue Tasks */}
         <div
           onClick={onNavigateToAlerts}
-          className="bg-white rounded-2xl p-5 border border-rose-200 shadow-sm hover:shadow-md transition-all cursor-pointer group bg-gradient-to-br from-white to-rose-50/50 hover:border-rose-400 flex flex-col justify-between"
+          className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-rose-200 dark:border-rose-900/60 shadow-sm hover:shadow-md transition-all cursor-pointer group bg-gradient-to-br from-white to-rose-50/50 dark:from-slate-900 dark:to-rose-950/30 hover:border-rose-400 flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-rose-600 uppercase tracking-wider">Overdue Tasks</span>
-            <div className="p-2.5 rounded-xl bg-rose-100 text-rose-600 group-hover:scale-110 transition-transform">
+            <span className="text-xs font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider">Overdue Tasks</span>
+            <div className="p-2.5 rounded-xl bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400 group-hover:scale-110 transition-transform">
               <AlertTriangle className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-4 flex items-baseline justify-between">
-            <span className="text-3xl font-black text-rose-600 tracking-tight">{stats.metrics.overdueTasks}</span>
-            <span className="text-xs font-bold text-rose-600 group-hover:underline flex items-center">
+            <span className="text-3xl font-black text-rose-600 dark:text-rose-400 tracking-tight">{stats.metrics.overdueTasks}</span>
+            <span className="text-xs font-bold text-rose-600 dark:text-rose-400 group-hover:underline flex items-center">
               View alerts →
             </span>
           </div>
-          <p className="text-[11px] text-rose-500 mt-1 font-medium">Needs immediate resolution</p>
+          <p className="text-[11px] text-rose-500 dark:text-rose-400 mt-1 font-medium">Needs immediate resolution</p>
         </div>
 
         {/* Due This Week */}
         <div
           onClick={() => onNavigateToTasks()}
-          className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm hover:shadow-md transition-all cursor-pointer group hover:border-amber-300 flex flex-col justify-between"
+          className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200/90 dark:border-slate-800 shadow-sm hover:shadow-md transition-all cursor-pointer group hover:border-amber-300 dark:hover:border-amber-500 flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">Due This Week</span>
-            <div className="p-2.5 rounded-xl bg-amber-50 text-amber-600 group-hover:scale-110 transition-transform">
+            <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Due This Week</span>
+            <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform">
               <Calendar className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-4 flex items-baseline justify-between">
-            <span className="text-3xl font-black text-slate-900 tracking-tight">{stats.metrics.dueThisWeek}</span>
-            <span className="text-xs font-semibold text-slate-500">Target Delivery</span>
+            <span className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{stats.metrics.dueThisWeek}</span>
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Target Delivery</span>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1 font-medium">Upcoming 7-day deadlines</p>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 font-medium">Upcoming 7-day deadlines</p>
         </div>
 
         {/* Completed This Week */}
         <div
           onClick={() => onNavigateToTasks({ status: 'Done' })}
-          className="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm hover:shadow-md transition-all cursor-pointer group hover:border-emerald-300 flex flex-col justify-between"
+          className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200/90 dark:border-slate-800 shadow-sm hover:shadow-md transition-all cursor-pointer group hover:border-emerald-300 dark:hover:border-emerald-500 flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">Completed This Week</span>
-            <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-110 transition-transform">
+            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Completed This Week</span>
+            <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
               <CheckCircle2 className="w-5 h-5" />
             </div>
           </div>
           <div className="mt-4 flex items-baseline justify-between">
-            <span className="text-3xl font-black text-emerald-600 tracking-tight">{stats.metrics.completedThisWeek}</span>
-            <span className="text-xs font-bold text-emerald-600">Shipped 🎉</span>
+            <span className="text-3xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight">{stats.metrics.completedThisWeek}</span>
+            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">Shipped 🎉</span>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1 font-medium">Delivered to clients</p>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 font-medium">Delivered to clients</p>
         </div>
       </div>
 
@@ -196,23 +196,23 @@ export default function DashboardView({ onNavigateToTasks, onNavigateToAlerts }:
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Column: Team Capacity & Workload Balance (Goal 8: "who is overloaded") */}
         <div className="lg:col-span-7 space-y-6">
-          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-7">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-sm p-6 sm:p-7">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center space-x-2.5">
-                <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
+                <div className="p-2 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 rounded-xl">
                   <Users className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-base sm:text-lg font-bold text-slate-900">Team Capacity & Workload Balance</h2>
-                  <p className="text-xs text-slate-500">Live capacity analysis to identify overloaded staff and balance client assignments.</p>
+                  <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Team Capacity & Workload Balance</h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Live capacity analysis to identify overloaded staff and balance client assignments.</p>
                 </div>
               </div>
             </div>
 
             <div className="overflow-x-auto mt-5">
-              <table className="min-w-full divide-y divide-slate-100 text-left text-xs">
+              <table className="min-w-full divide-y divide-slate-100 dark:divide-slate-800 text-left text-xs">
                 <thead>
-                  <tr className="bg-slate-50/80 text-slate-500 font-bold uppercase tracking-wider">
+                  <tr className="bg-slate-50/80 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
                     <th className="py-3 px-3.5 rounded-l-xl">Team Member</th>
                     <th className="py-3 px-3.5 text-center">Role</th>
                     <th className="py-3 px-3.5 text-center">Open Tasks</th>
@@ -221,12 +221,12 @@ export default function DashboardView({ onNavigateToTasks, onNavigateToAlerts }:
                     <th className="py-3 px-3.5 text-right rounded-r-xl">Capacity Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {stats.assigneeBreakdown.map((member) => (
                     <tr
                       key={member.id}
                       onClick={() => onNavigateToTasks({ assigneeId: member.id })}
-                      className="hover:bg-slate-50/80 transition-colors cursor-pointer group"
+                      className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors cursor-pointer group"
                     >
                       <td className="py-3.5 px-3.5">
                         <div className="flex items-center space-x-2.5">
@@ -234,10 +234,10 @@ export default function DashboardView({ onNavigateToTasks, onNavigateToAlerts }:
                             {member.name.charAt(0)}
                           </div>
                           <div>
-                            <div className="font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                            <div className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                               {member.name}
                             </div>
-                            <div className="text-[11px] text-slate-400 font-medium">{member.email}</div>
+                            <div className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">{member.email}</div>
                           </div>
                         </div>
                       </td>
@@ -245,41 +245,41 @@ export default function DashboardView({ onNavigateToTasks, onNavigateToAlerts }:
                         <span
                           className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
                             member.role === 'manager'
-                              ? 'bg-purple-100 text-purple-800 border border-purple-200'
-                              : 'bg-blue-100 text-blue-800 border border-blue-200'
+                              ? 'bg-purple-100 dark:bg-purple-950/80 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800'
+                              : 'bg-blue-100 dark:bg-blue-950/80 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800'
                           }`}
                         >
                           {member.role}
                         </span>
                       </td>
-                      <td className="py-3.5 px-3.5 text-center font-bold text-slate-900">
+                      <td className="py-3.5 px-3.5 text-center font-bold text-slate-900 dark:text-slate-100">
                         {member.openTasks}
                       </td>
                       <td className="py-3.5 px-3.5 text-center font-bold">
                         {member.overdueTasks > 0 ? (
-                          <span className="text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200 font-extrabold">
+                          <span className="text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 px-2 py-0.5 rounded-full border border-rose-200 dark:border-rose-900 font-extrabold">
                             {member.overdueTasks}
                           </span>
                         ) : (
-                          <span className="text-slate-400 font-medium">0</span>
+                          <span className="text-slate-400 dark:text-slate-600 font-medium">0</span>
                         )}
                       </td>
-                      <td className="py-3.5 px-3.5 text-center text-slate-600 font-medium">
+                      <td className="py-3.5 px-3.5 text-center text-slate-600 dark:text-slate-400 font-medium">
                         {member.completedTasks}
                       </td>
                       <td className="py-3.5 px-3.5 text-right">
                         {member.isOverloaded ? (
-                          <span className="inline-flex items-center space-x-1.5 bg-rose-50 text-rose-700 border border-rose-200 px-2.5 py-1 rounded-full font-bold text-[10px]">
+                          <span className="inline-flex items-center space-x-1.5 bg-rose-50 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-900 px-2.5 py-1 rounded-full font-bold text-[10px]">
                             <Flame className="w-3.5 h-3.5 text-rose-500 animate-pulse" />
                             <span>Overloaded</span>
                           </span>
                         ) : member.openTasks === 0 ? (
-                          <span className="inline-flex items-center text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full font-medium text-[10px]">
+                          <span className="inline-flex items-center text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-full font-medium text-[10px]">
                             Available
                           </span>
                         ) : (
-                          <span className="inline-flex items-center text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full font-bold text-[10px]">
-                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 mr-1" />
+                          <span className="inline-flex items-center text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-800 px-2.5 py-1 rounded-full font-bold text-[10px]">
+                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 mr-1" />
                             Balanced
                           </span>
                         )}
@@ -295,25 +295,25 @@ export default function DashboardView({ onNavigateToTasks, onNavigateToAlerts }:
         {/* Right Column: Status Breakdown & 8-Week Completion Trajectory (Goal 8) */}
         <div className="lg:col-span-5 space-y-6">
           {/* Status Breakdown */}
-          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-7">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-sm p-6 sm:p-7">
             <div className="flex items-center space-x-2.5 mb-2">
-              <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
+              <div className="p-2 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 rounded-xl">
                 <Layers className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-base sm:text-lg font-bold text-slate-900">Task Status Distribution</h2>
-                <p className="text-xs text-slate-500">Breakdown of all {totalTasks} work items across lifecycle phases.</p>
+                <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Task Status Distribution</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Breakdown of all {totalTasks} work items across lifecycle phases.</p>
               </div>
             </div>
 
             <div className="space-y-3 mt-5">
               {stats.statusBreakdown.map((item) => {
-                const colors: Record<string, { bg: string; bar: string; text: string; badge: string }> = {
-                  Backlog: { bg: 'bg-slate-100', bar: 'bg-slate-500', text: 'text-slate-800', badge: 'bg-slate-100 text-slate-700' },
-                  'In Progress': { bg: 'bg-blue-50', bar: 'bg-blue-600', text: 'text-blue-900', badge: 'bg-blue-100 text-blue-800' },
-                  'In Review': { bg: 'bg-purple-50', bar: 'bg-purple-600', text: 'text-purple-900', badge: 'bg-purple-100 text-purple-800' },
-                  Blocked: { bg: 'bg-rose-50', bar: 'bg-rose-600', text: 'text-rose-900', badge: 'bg-rose-100 text-rose-800' },
-                  Done: { bg: 'bg-emerald-50', bar: 'bg-emerald-600', text: 'text-emerald-900', badge: 'bg-emerald-100 text-emerald-800' },
+                const colors: Record<string, { bg: string; bar: string; text: string }> = {
+                  Backlog: { bg: 'bg-slate-100 dark:bg-slate-800', bar: 'bg-slate-500 dark:bg-slate-400', text: 'text-slate-800 dark:text-slate-200' },
+                  'In Progress': { bg: 'bg-blue-50 dark:bg-blue-950/40', bar: 'bg-blue-600 dark:bg-blue-500', text: 'text-blue-900 dark:text-blue-300' },
+                  'In Review': { bg: 'bg-purple-50 dark:bg-purple-950/40', bar: 'bg-purple-600 dark:bg-purple-500', text: 'text-purple-900 dark:text-purple-300' },
+                  Blocked: { bg: 'bg-rose-50 dark:bg-rose-950/40', bar: 'bg-rose-600 dark:bg-rose-500', text: 'text-rose-900 dark:text-rose-300' },
+                  Done: { bg: 'bg-emerald-50 dark:bg-emerald-950/40', bar: 'bg-emerald-600 dark:bg-emerald-500', text: 'text-emerald-900 dark:text-emerald-300' },
                 };
                 const c = colors[item.status] || colors.Backlog;
                 const percent = totalTasks > 0 ? Math.round((item.count / totalTasks) * 100) : 0;
@@ -322,18 +322,18 @@ export default function DashboardView({ onNavigateToTasks, onNavigateToAlerts }:
                   <div
                     key={item.status}
                     onClick={() => onNavigateToTasks({ status: item.status })}
-                    className="p-3 rounded-2xl border border-slate-100 hover:border-indigo-200 transition-all cursor-pointer group bg-slate-50/40 hover:bg-white"
+                    className="p-3 rounded-2xl border border-slate-100 dark:border-slate-800 hover:border-indigo-200 dark:hover:border-indigo-800 transition-all cursor-pointer group bg-slate-50/40 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800"
                   >
                     <div className="flex items-center justify-between text-xs font-bold mb-2">
                       <div className="flex items-center space-x-2">
                         <span className={`w-2.5 h-2.5 rounded-full ${c.bar}`}></span>
                         <span className={c.text}>{item.status}</span>
                       </div>
-                      <span className="text-slate-600 font-mono">
-                        {item.count} tasks <span className="text-slate-400 font-normal">({percent}%)</span>
+                      <span className="text-slate-600 dark:text-slate-400 font-mono">
+                        {item.count} tasks <span className="text-slate-400 dark:text-slate-500 font-normal">({percent}%)</span>
                       </span>
                     </div>
-                    <div className="w-full bg-slate-200/70 h-2 rounded-full overflow-hidden">
+                    <div className="w-full bg-slate-200/70 dark:bg-slate-700/60 h-2 rounded-full overflow-hidden">
                       <div
                         className={`h-full ${c.bar} transition-all duration-500 rounded-full`}
                         style={{ width: `${percent}%` }}
@@ -346,33 +346,33 @@ export default function DashboardView({ onNavigateToTasks, onNavigateToAlerts }:
           </div>
 
           {/* 8-Week Completion Trajectory Velocity Chart (Goal 8) */}
-          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-7">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-sm p-6 sm:p-7">
             <div className="flex items-center space-x-2.5 mb-2">
-              <div className="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
+              <div className="p-2 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 rounded-xl">
                 <TrendingUp className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-base sm:text-lg font-bold text-slate-900">8-Week Completion Velocity</h2>
-                <p className="text-xs text-slate-500">Verified tasks moved to 'Done' over the last 8 weekly sprint cycles.</p>
+                <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">8-Week Completion Velocity</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Verified tasks moved to 'Done' over the last 8 weekly sprint cycles.</p>
               </div>
             </div>
 
             {/* Custom SVG / HTML Bar Chart */}
-            <div className="flex items-end justify-between h-44 pt-6 px-2 border-b border-slate-200 mt-4">
+            <div className="flex items-end justify-between h-44 pt-6 px-2 border-b border-slate-200 dark:border-slate-800 mt-4">
               {stats.completionTrends.map((trend) => {
                 const heightPercent = Math.max(14, Math.round((trend.count / maxWeeklyCount) * 100));
                 return (
                   <div key={trend.weekLabel} className="flex flex-col items-center flex-1 group">
-                    <span className="text-[11px] font-black text-slate-700 mb-1.5 group-hover:text-emerald-600 group-hover:scale-110 transition-transform">
+                    <span className="text-[11px] font-black text-slate-700 dark:text-slate-300 mb-1.5 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:scale-110 transition-transform">
                       {trend.count}
                     </span>
-                    <div className="w-7 sm:w-9 bg-slate-100 rounded-t-xl flex items-end overflow-hidden h-28 shadow-inner">
+                    <div className="w-7 sm:w-9 bg-slate-100 dark:bg-slate-800 rounded-t-xl flex items-end overflow-hidden h-28 shadow-inner">
                       <div
                         className="w-full bg-gradient-to-t from-emerald-600 via-teal-500 to-emerald-400 rounded-t-xl group-hover:from-emerald-500 group-hover:to-teal-300 transition-all duration-300"
                         style={{ height: `${heightPercent}%` }}
                       ></div>
                     </div>
-                    <span className="text-[10px] text-slate-500 mt-2 font-mono font-medium truncate max-w-[50px]">
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-2 font-mono font-medium truncate max-w-[50px]">
                       {trend.weekLabel}
                     </span>
                   </div>
