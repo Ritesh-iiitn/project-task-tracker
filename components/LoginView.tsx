@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
 import {
   FolderKanban,
   Shield,
@@ -20,7 +21,8 @@ import {
   ChevronRight,
   Clock,
   X,
-  ExternalLink,
+  Sun,
+  Moon,
 } from 'lucide-react';
 
 const DEMO_ACCOUNTS = [
@@ -29,33 +31,34 @@ const DEMO_ACCOUNTS = [
     name: 'Alex Morgan',
     email: 'manager@company.com',
     desc: 'Portfolio Manager • All projects, team membership & task delete',
-    badge: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
+    badge: 'bg-purple-500/20 text-purple-700 dark:text-purple-300 border-purple-500/30',
   },
   {
     role: 'member',
     name: 'Sarah Chen',
     email: 'sarah@company.com',
     desc: 'Lead Engineer • Assigned to Fintech Payments & Global Logistics',
-    badge: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+    badge: 'bg-blue-500/20 text-blue-700 dark:text-blue-300 border-blue-500/30',
   },
   {
     role: 'member',
     name: 'David Kim',
     email: 'david@company.com',
     desc: 'Frontend Specialist • Assigned to Fintech Payments & Health Telemed',
-    badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+    badge: 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30',
   },
   {
     role: 'member',
     name: 'Elena Rostova',
     email: 'elena@company.com',
     desc: 'DevOps & QA Engineer • Assigned to Health Telemed & Global Logistics',
-    badge: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+    badge: 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30',
   },
 ];
 
 export default function LoginView() {
   const { login, signup, googleLogin } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [isSignUpMode, setIsSignUpMode] = useState(true);
   const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
 
@@ -100,7 +103,6 @@ export default function LoginView() {
 
   // Google OAuth redirect or interactive email sign-up
   const handleGoogleSignUpRedirect = () => {
-    // Try redirecting directly to backend Google OAuth route
     window.location.href = `/api/auth/google?role=${role}`;
   };
 
@@ -136,29 +138,42 @@ export default function LoginView() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between font-sans selection:bg-indigo-500 selection:text-white relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col justify-between font-sans selection:bg-indigo-500 selection:text-white relative overflow-hidden transition-colors duration-200">
       {/* Subtle Background Glow Spheres */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-600/15 rounded-full blur-3xl pointer-events-none"></div>
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/15 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-500/10 dark:bg-indigo-600/15 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 dark:bg-purple-600/15 rounded-full blur-3xl pointer-events-none"></div>
 
       {/* Top Professional Header / Navbar */}
-      <header className="sticky top-0 z-30 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/70 px-4 sm:px-8 py-3.5">
+      <header className="sticky top-0 z-30 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/70 px-4 sm:px-8 py-3.5 transition-colors">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-9 h-9 bg-gradient-to-tr from-indigo-500 via-purple-500 to-emerald-400 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30">
               <FolderKanban className="w-5 h-5 text-white font-bold" />
             </div>
             <div>
-              <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text text-transparent">
+              <span className="font-extrabold text-lg tracking-tight text-slate-900 dark:text-white">
                 PulseTrack
               </span>
-              <span className="ml-2 text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+              <span className="ml-2 text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-indigo-500/10 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/20 dark:border-indigo-500/30">
                 Enterprise Portfolio
               </span>
             </div>
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2.5 sm:space-x-3">
+            {/* Theme Toggle on Landing Page */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-amber-300 border border-slate-300 dark:border-slate-700/80 shadow-sm transition-all flex items-center justify-center"
+              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-4 h-4 text-amber-300 animate-in spin-in-180 duration-200" />
+              ) : (
+                <Moon className="w-4 h-4 text-indigo-600 animate-in spin-in-180 duration-200" />
+              )}
+            </button>
+
             <button
               onClick={() => {
                 setIsSignUpMode(false);
@@ -166,8 +181,8 @@ export default function LoginView() {
               }}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                 !isSignUpMode
-                  ? 'bg-slate-800 text-white border border-slate-700'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-slate-900 dark:bg-slate-800 text-white border border-slate-800 dark:border-slate-700'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               Sign In
@@ -197,30 +212,30 @@ export default function LoginView() {
           
           {/* Left Column: Hero Showcase & Interviewer Quick-Start Dock (Cols 7) */}
           <div className="lg:col-span-7 space-y-6">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-xs font-bold text-indigo-300">
-              <Zap className="w-3.5 h-3.5 text-amber-400" />
+            <div className="inline-flex items-center space-x-2 px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-xs font-bold text-indigo-700 dark:text-indigo-300">
+              <Zap className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
               <span>Assignment 01 • Project & Task Tracking System</span>
             </div>
 
-            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
               Multi-Client Portfolio & <br />
-              <span className="bg-gradient-to-r from-indigo-400 via-purple-300 to-emerald-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-emerald-600 dark:from-indigo-400 dark:via-purple-300 dark:to-emerald-400 bg-clip-text text-transparent">
                 Task Lifecycle System
               </span>
             </h1>
 
-            <p className="text-sm text-slate-400 max-w-xl leading-relaxed">
+            <p className="text-sm text-slate-600 dark:text-slate-400 max-w-xl leading-relaxed">
               Designed for client services firms to eliminate missed deadlines, balance team capacity across engagements, enforce strict lifecycle transitions, and maintain immutable audit history.
             </p>
 
             {/* Evaluator Quick Notice Banner */}
-            <div className="p-4 bg-slate-900/90 border border-indigo-500/30 rounded-2xl shadow-xl space-y-3 backdrop-blur-md">
-              <div className="flex items-center justify-between text-xs font-bold text-indigo-300 uppercase tracking-wider">
+            <div className="p-4 bg-white dark:bg-slate-900/90 border border-indigo-200 dark:border-indigo-500/30 rounded-2xl shadow-xl space-y-3 backdrop-blur-md">
+              <div className="flex items-center justify-between text-xs font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider">
                 <span className="flex items-center space-x-2">
-                  <Sparkles className="w-4 h-4 text-amber-400" />
+                  <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-400" />
                   <span>Reviewer Quick-Start (1-Click Demo Accounts)</span>
                 </span>
-                <span className="text-[10px] text-slate-400 font-normal">Click any role to test instantly</span>
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">Click any role to test instantly</span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -229,20 +244,20 @@ export default function LoginView() {
                     key={acc.email}
                     onClick={() => handleDemoLogin(acc.email)}
                     disabled={loading}
-                    className="text-left p-3 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-indigo-500/60 hover:bg-slate-950 transition-all group flex flex-col justify-between"
+                    className="text-left p-3 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 hover:border-indigo-500/60 hover:bg-slate-100 dark:hover:bg-slate-950 transition-all group flex flex-col justify-between"
                   >
                     <div>
                       <div className="flex items-center justify-between">
-                        <span className="font-bold text-xs text-slate-100 group-hover:text-indigo-300">
+                        <span className="font-bold text-xs text-slate-900 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-300">
                           {acc.name}
                         </span>
                         <span className={`text-[9px] uppercase font-mono font-bold px-1.5 py-0.2 rounded ${acc.badge}`}>
                           {acc.role}
                         </span>
                       </div>
-                      <p className="text-[11px] text-slate-400 mt-1 line-clamp-1">{acc.desc}</p>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-1">{acc.desc}</p>
                     </div>
-                    <div className="mt-2 flex items-center text-[10px] text-indigo-400 font-semibold group-hover:translate-x-1 transition-transform">
+                    <div className="mt-2 flex items-center text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold group-hover:translate-x-1 transition-transform">
                       <span>Sign in as {acc.name.split(' ')[0]}</span>
                       <ChevronRight className="w-3 h-3 ml-0.5" />
                     </div>
@@ -253,27 +268,27 @@ export default function LoginView() {
 
             {/* Key System Highlights Pills */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2 text-xs">
-              <div className="p-3 bg-slate-900/60 border border-slate-800 rounded-xl flex items-center space-x-2.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                <span className="text-slate-300 font-semibold">Server-Enforced RBAC</span>
+              <div className="p-3 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center space-x-2.5 shadow-sm">
+                <ShieldCheck className="w-4 h-4 text-emerald-500 dark:text-emerald-400 flex-shrink-0" />
+                <span className="text-slate-700 dark:text-slate-300 font-semibold">Server-Enforced RBAC</span>
               </div>
-              <div className="p-3 bg-slate-900/60 border border-slate-800 rounded-xl flex items-center space-x-2.5">
-                <Layers className="w-4 h-4 text-indigo-400 flex-shrink-0" />
-                <span className="text-slate-300 font-semibold">Strict State Machine</span>
+              <div className="p-3 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center space-x-2.5 shadow-sm">
+                <Layers className="w-4 h-4 text-indigo-500 dark:text-indigo-400 flex-shrink-0" />
+                <span className="text-slate-700 dark:text-slate-300 font-semibold">Strict State Machine</span>
               </div>
-              <div className="p-3 bg-slate-900/60 border border-slate-800 rounded-xl flex items-center space-x-2.5">
-                <Clock className="w-4 h-4 text-rose-400 flex-shrink-0" />
-                <span className="text-slate-300 font-semibold">Overdue Alerts & Resets</span>
+              <div className="p-3 bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center space-x-2.5 shadow-sm">
+                <Clock className="w-4 h-4 text-rose-500 dark:text-rose-400 flex-shrink-0" />
+                <span className="text-slate-700 dark:text-slate-300 font-semibold">Overdue Alerts & Resets</span>
               </div>
             </div>
           </div>
 
           {/* Right Column: Sleek Glassmorphic Sign In / Sign Up Form (Cols 5) */}
           <div className="lg:col-span-5">
-            <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-7 shadow-2xl backdrop-blur-xl relative">
+            <div className="bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-7 shadow-2xl backdrop-blur-xl relative">
               
               {/* Form Mode Tabs */}
-              <div className="flex border-b border-slate-800 mb-6">
+              <div className="flex border-b border-slate-200 dark:border-slate-800 mb-6">
                 <button
                   type="button"
                   onClick={() => {
@@ -282,8 +297,8 @@ export default function LoginView() {
                   }}
                   className={`flex-1 py-3 text-xs font-bold transition-all border-b-2 flex items-center justify-center space-x-2 ${
                     !isSignUpMode
-                      ? 'border-indigo-500 text-indigo-400'
-                      : 'border-transparent text-slate-400 hover:text-slate-200'
+                      ? 'border-indigo-600 dark:border-indigo-500 text-indigo-600 dark:text-indigo-400'
+                      : 'border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200'
                   }`}
                 >
                   <LogIn className="w-4 h-4" />
@@ -299,8 +314,8 @@ export default function LoginView() {
                   }}
                   className={`flex-1 py-3 text-xs font-bold transition-all border-b-2 flex items-center justify-center space-x-2 ${
                     isSignUpMode
-                      ? 'border-indigo-500 text-indigo-400'
-                      : 'border-transparent text-slate-400 hover:text-slate-200'
+                      ? 'border-indigo-600 dark:border-indigo-500 text-indigo-600 dark:text-indigo-400'
+                      : 'border-transparent text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200'
                   }`}
                 >
                   <UserPlus className="w-4 h-4" />
@@ -309,10 +324,10 @@ export default function LoginView() {
               </div>
 
               <div className="mb-4">
-                <h3 className="text-base font-bold text-white">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">
                   {isSignUpMode ? 'Sign Up for PulseTrack' : 'Sign In to Workspace'}
                 </h3>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                   {isSignUpMode
                     ? 'Create a new account using Google or email credentials.'
                     : 'Enter your credentials or use the 1-click evaluator demo.'}
@@ -326,7 +341,7 @@ export default function LoginView() {
                     type="button"
                     onClick={handleGoogleSignUpRedirect}
                     disabled={loading}
-                    className="w-full py-2.5 px-4 bg-slate-950 hover:bg-slate-800 border border-slate-700/80 rounded-xl text-xs font-bold text-slate-200 shadow-sm transition-all flex items-center justify-center space-x-2.5 mb-4 group cursor-pointer"
+                    className="w-full py-2.5 px-4 bg-slate-50 dark:bg-slate-950 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700/80 rounded-xl text-xs font-bold text-slate-800 dark:text-slate-200 shadow-sm transition-all flex items-center justify-center space-x-2.5 mb-4 group cursor-pointer"
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24">
                       <path
@@ -350,8 +365,8 @@ export default function LoginView() {
                   </button>
 
                   <div className="relative flex items-center justify-center my-4">
-                    <div className="border-t border-slate-800 w-full"></div>
-                    <span className="bg-slate-900 px-3 text-[10px] text-slate-500 font-bold uppercase tracking-wider absolute">
+                    <div className="border-t border-slate-200 dark:border-slate-800 w-full"></div>
+                    <span className="bg-white dark:bg-slate-900 px-3 text-[10px] text-slate-500 font-bold uppercase tracking-wider absolute">
                       Or Sign Up with Email
                     </span>
                   </div>
@@ -359,8 +374,8 @@ export default function LoginView() {
               )}
 
               {error && (
-                <div className="mb-4 p-3 bg-rose-950/60 border border-rose-800/80 rounded-xl text-xs text-rose-300 flex items-center space-x-2">
-                  <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-400" />
+                <div className="mb-4 p-3 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800/80 rounded-xl text-xs text-rose-700 dark:text-rose-300 flex items-center space-x-2">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-600 dark:text-rose-400" />
                   <span>{error}</span>
                 </div>
               )}
@@ -369,15 +384,15 @@ export default function LoginView() {
                 {/* Full Name Input (Sign Up Only) */}
                 {isSignUpMode && (
                   <div>
-                    <label className="block text-xs font-bold text-slate-300 mb-1.5">Full Name</label>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Full Name</label>
                     <div className="relative">
-                      <UserIcon className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+                      <UserIcon className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-3" />
                       <input
                         type="text"
                         placeholder="e.g. Robert Vance"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="w-full pl-10 pr-3.5 py-2.5 text-xs bg-slate-950/80 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none"
+                        className="w-full pl-10 pr-3.5 py-2.5 text-xs bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none"
                         required
                       />
                     </div>
@@ -386,15 +401,15 @@ export default function LoginView() {
 
                 {/* Email Address */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1.5">Email Address</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Email Address</label>
                   <div className="relative">
-                    <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+                    <Mail className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-3" />
                     <input
                       type="email"
                       placeholder="name@company.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-10 pr-3.5 py-2.5 text-xs bg-slate-950/80 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none"
+                      className="w-full pl-10 pr-3.5 py-2.5 text-xs bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none"
                       required
                     />
                   </div>
@@ -402,15 +417,15 @@ export default function LoginView() {
 
                 {/* Password */}
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1.5">Password</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Password</label>
                   <div className="relative">
-                    <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+                    <Lock className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-3" />
                     <input
                       type="password"
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full pl-10 pr-3.5 py-2.5 text-xs bg-slate-950/80 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none"
+                      className="w-full pl-10 pr-3.5 py-2.5 text-xs bg-slate-50 dark:bg-slate-950/80 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none"
                       required
                     />
                   </div>
@@ -419,15 +434,15 @@ export default function LoginView() {
                 {/* Role Selector (Sign Up Only) */}
                 {isSignUpMode && (
                   <div>
-                    <label className="block text-xs font-bold text-slate-300 mb-1.5">Select Role</label>
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">Select Role</label>
                     <div className="grid grid-cols-2 gap-2.5">
                       <button
                         type="button"
                         onClick={() => setRole('member')}
                         className={`py-2.5 px-3 rounded-xl border text-xs font-bold flex items-center justify-center space-x-1.5 transition-all ${
                           role === 'member'
-                            ? 'border-blue-500/80 bg-blue-500/20 text-blue-300'
-                            : 'border-slate-800 bg-slate-950/50 text-slate-400 hover:text-slate-200'
+                            ? 'border-blue-500/80 bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300'
+                            : 'border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950/50 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                         }`}
                       >
                         <UserIcon className="w-3.5 h-3.5" />
@@ -438,8 +453,8 @@ export default function LoginView() {
                         onClick={() => setRole('manager')}
                         className={`py-2.5 px-3 rounded-xl border text-xs font-bold flex items-center justify-center space-x-1.5 transition-all ${
                           role === 'manager'
-                            ? 'border-purple-500/80 bg-purple-500/20 text-purple-300'
-                            : 'border-slate-800 bg-slate-950/50 text-slate-400 hover:text-slate-200'
+                            ? 'border-purple-500/80 bg-purple-50 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300'
+                            : 'border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950/50 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                         }`}
                       >
                         <Shield className="w-3.5 h-3.5" />
@@ -466,8 +481,8 @@ export default function LoginView() {
       {/* Google Account Selector & Cloud Configuration Modal */}
       {isGoogleModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl max-w-md w-full relative text-slate-100">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-2xl max-w-md w-full relative text-slate-900 dark:text-slate-100">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
               <div className="flex items-center space-x-2.5">
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path
@@ -488,14 +503,14 @@ export default function LoginView() {
                   />
                 </svg>
                 <div>
-                  <h4 className="text-sm font-bold text-white">Google OAuth Sign-Up</h4>
-                  <p className="text-[11px] text-slate-400">Authenticate with Google Account</p>
+                  <h4 className="text-sm font-bold text-slate-900 dark:text-white">Google OAuth Sign-Up</h4>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">Authenticate with Google Account</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setIsGoogleModalOpen(false)}
-                className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+                className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -503,38 +518,38 @@ export default function LoginView() {
 
             <form onSubmit={handleGoogleCustomSubmit} className="mt-4 space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">Google Account Email</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Google Account Email</label>
                 <input
                   type="email"
                   placeholder="your.name@gmail.com"
                   value={googleEmail}
                   onChange={(e) => setGoogleEmail(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  className="w-full px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">Full Name</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
                 <input
                   type="text"
                   placeholder="e.g. Ritesh Singh"
                   value={googleName}
                   onChange={(e) => setGoogleName(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  className="w-full px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-300 mb-1">Select Role</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Select Role</label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => setGoogleRole('member')}
                     className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all ${
                       googleRole === 'member'
-                        ? 'border-blue-500 bg-blue-500/20 text-blue-300'
-                        : 'border-slate-800 bg-slate-950 text-slate-400'
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300'
+                        : 'border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-600 dark:text-slate-400'
                     }`}
                   >
                     Member (Staff)
@@ -544,8 +559,8 @@ export default function LoginView() {
                     onClick={() => setGoogleRole('manager')}
                     className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all ${
                       googleRole === 'manager'
-                        ? 'border-purple-500 bg-purple-500/20 text-purple-300'
-                        : 'border-slate-800 bg-slate-950 text-slate-400'
+                        ? 'border-purple-500 bg-purple-50 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300'
+                        : 'border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-600 dark:text-slate-400'
                     }`}
                   >
                     Manager (Admin)
@@ -553,11 +568,11 @@ export default function LoginView() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-end space-x-2.5 pt-3 border-t border-slate-800">
+              <div className="flex items-center justify-end space-x-2.5 pt-3 border-t border-slate-200 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setIsGoogleModalOpen(false)}
-                  className="px-4 py-2 border border-slate-800 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+                  className="px-4 py-2 border border-slate-300 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 >
                   Cancel
                 </button>
@@ -575,7 +590,7 @@ export default function LoginView() {
       )}
 
       {/* Footer */}
-      <footer className="border-t border-slate-800/80 py-4 px-4 sm:px-8 text-center text-xs text-slate-500">
+      <footer className="border-t border-slate-200/80 dark:border-slate-800/80 py-4 px-4 sm:px-8 text-center text-xs text-slate-500 dark:text-slate-400 transition-colors">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <span>PulseTrack — Professional Services Portfolio & Task Management System</span>
           <span>Assignment 01 • Built with Next.js 14, TypeScript, Tailwind, Prisma & PostgreSQL</span>
