@@ -56,7 +56,7 @@ const DEMO_ACCOUNTS = [
 
 export default function LoginView() {
   const { login, signup, googleLogin } = useAuth();
-  const [isSignUpMode, setIsSignUpMode] = useState(false);
+  const [isSignUpMode, setIsSignUpMode] = useState(true);
   const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
 
   // Form states
