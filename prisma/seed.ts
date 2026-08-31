@@ -31,7 +31,7 @@ async function main() {
     data: {
       email: 'sarah@company.com',
       passwordHash,
-      name: 'Sarah Chen',
+      name: 'Sarah Chen (Lead Engineer)',
       role: 'member',
     },
   });
@@ -40,7 +40,7 @@ async function main() {
     data: {
       email: 'david@company.com',
       passwordHash,
-      name: 'David Kim',
+      name: 'David Kim (Frontend Dev)',
       role: 'member',
     },
   });
@@ -49,77 +49,81 @@ async function main() {
     data: {
       email: 'elena@company.com',
       passwordHash,
-      name: 'Elena Rostova',
+      name: 'Elena Rostova (DevOps)',
       role: 'member',
     },
   });
 
-  console.log('📁 Creating client projects...');
-  const projApex = await prisma.project.create({
+  console.log('📁 Creating client projects with clear names...');
+  // Project 1: FINTECH
+  const projFintech = await prisma.project.create({
     data: {
-      key: 'APEX',
-      name: 'Apex Fintech Web Portal',
-      description: 'Institutional trading dashboard with real-time risk analytics and multi-currency settlement.',
+      key: 'FINTECH',
+      name: 'Fintech Payments Portal',
+      description: 'Client Project: Real-time payment processing, trading risk engine, and settlement dashboard.',
       ownerId: manager.id,
       isArchived: false,
     },
   });
 
-  const projNova = await prisma.project.create({
+  // Project 2: HEALTH
+  const projHealth = await prisma.project.create({
     data: {
-      key: 'NOVA',
-      name: 'Nova Health Telemed App',
-      description: 'HIPAA-compliant video consultation, electronic health record integration, and prescription management.',
+      key: 'HEALTH',
+      name: 'Health Telemed Mobile App',
+      description: 'Client Project: Video doctor consultations, medical record synchronization, and digital e-prescriptions.',
       ownerId: manager.id,
       isArchived: false,
     },
   });
 
-  const projOrbit = await prisma.project.create({
+  // Project 3: LOGISTICS
+  const projLogistics = await prisma.project.create({
     data: {
-      key: 'ORBIT',
-      name: 'Orbit Global Logistics Engine',
-      description: 'Container shipment GPS tracking, customs clearance automation, and carrier dispatch system.',
+      key: 'LOGISTICS',
+      name: 'Global Logistics Tracker',
+      description: 'Client Project: GPS cargo tracking, port congestion AI prediction, and carrier dispatch.',
       ownerId: manager.id,
       isArchived: false,
     },
   });
 
+  // Project 4: LEGACY (Archived)
   const projLegacy = await prisma.project.create({
     data: {
       key: 'LEGACY',
-      name: 'Legacy CRM Data Migration',
-      description: 'Archived project: Migration of historical customer data from on-premise Oracle to Postgres cloud.',
+      name: 'Legacy CRM Migration',
+      description: 'Archived Project: Historical customer data migration from Oracle to Postgres.',
       ownerId: manager.id,
       isArchived: true,
     },
   });
 
   console.log('🤝 Assigning project memberships...');
-  // Apex: manager, sarah, david
+  // Fintech: manager, sarah, david
   await prisma.projectMember.createMany({
     data: [
-      { projectId: projApex.id, userId: manager.id },
-      { projectId: projApex.id, userId: member1.id },
-      { projectId: projApex.id, userId: member2.id },
+      { projectId: projFintech.id, userId: manager.id },
+      { projectId: projFintech.id, userId: member1.id },
+      { projectId: projFintech.id, userId: member2.id },
     ],
   });
 
-  // Nova: manager, david, elena
+  // Health: manager, david, elena
   await prisma.projectMember.createMany({
     data: [
-      { projectId: projNova.id, userId: manager.id },
-      { projectId: projNova.id, userId: member2.id },
-      { projectId: projNova.id, userId: member3.id },
+      { projectId: projHealth.id, userId: manager.id },
+      { projectId: projHealth.id, userId: member2.id },
+      { projectId: projHealth.id, userId: member3.id },
     ],
   });
 
-  // Orbit: manager, sarah, elena
+  // Logistics: manager, sarah, elena
   await prisma.projectMember.createMany({
     data: [
-      { projectId: projOrbit.id, userId: manager.id },
-      { projectId: projOrbit.id, userId: member1.id },
-      { projectId: projOrbit.id, userId: member3.id },
+      { projectId: projLogistics.id, userId: manager.id },
+      { projectId: projLogistics.id, userId: member1.id },
+      { projectId: projLogistics.id, userId: member3.id },
     ],
   });
 
@@ -131,17 +135,17 @@ async function main() {
     ],
   });
 
-  console.log('📋 Creating tasks with lifecycles, dependencies, and audit histories...');
+  console.log('📋 Creating tasks with clear descriptions and realistic histories...');
   const now = new Date();
 
-  // ---------------- APEX TASKS ----------------
-  // APEX-1: Done
-  const apex1 = await prisma.task.create({
+  // ---------------- FINTECH TASKS ----------------
+  // FINTECH-1: Done
+  const ft1 = await prisma.task.create({
     data: {
       taskNumber: 1,
-      key: 'APEX-1',
-      projectId: projApex.id,
-      title: 'Architect JWT OAuth2 authentication flow',
+      key: 'FINTECH-1',
+      projectId: projFintech.id,
+      title: 'Architect JWT and OAuth authentication security layer',
       description: 'Design stateless session management, refresh token rotation, and RBAC permission scopes.',
       priority: 'high',
       status: 'Done',
@@ -151,56 +155,56 @@ async function main() {
       createdAt: subDays(now, 14),
     },
   });
-  await prisma.taskAssignee.create({ data: { taskId: apex1.id, userId: member1.id } });
+  await prisma.taskAssignee.create({ data: { taskId: ft1.id, userId: member1.id } });
   await prisma.taskActivity.createMany({
     data: [
-      { taskId: apex1.id, userId: manager.id, type: 'created', newValue: 'Backlog', createdAt: subDays(now, 14) },
-      { taskId: apex1.id, userId: manager.id, type: 'assignment', field: 'assignee', newValue: member1.name, createdAt: subDays(now, 13) },
-      { taskId: apex1.id, userId: member1.id, type: 'status_change', field: 'status', oldValue: 'Backlog', newValue: 'In Progress', createdAt: subDays(now, 10) },
-      { taskId: apex1.id, userId: member1.id, type: 'status_change', field: 'status', oldValue: 'In Progress', newValue: 'In Review', createdAt: subDays(now, 5) },
-      { taskId: apex1.id, userId: manager.id, type: 'comment', comment: 'Security review passed with zero findings.', createdAt: subDays(now, 4) },
-      { taskId: apex1.id, userId: manager.id, type: 'status_change', field: 'status', oldValue: 'In Review', newValue: 'Done', createdAt: subDays(now, 4) },
+      { taskId: ft1.id, userId: manager.id, type: 'created', newValue: 'Backlog', createdAt: subDays(now, 14) },
+      { taskId: ft1.id, userId: manager.id, type: 'assignment', field: 'assignee', newValue: member1.name, createdAt: subDays(now, 13) },
+      { taskId: ft1.id, userId: member1.id, type: 'status_change', field: 'status', oldValue: 'Backlog', newValue: 'In Progress', createdAt: subDays(now, 10) },
+      { taskId: ft1.id, userId: member1.id, type: 'status_change', field: 'status', oldValue: 'In Progress', newValue: 'In Review', createdAt: subDays(now, 5) },
+      { taskId: ft1.id, userId: manager.id, type: 'comment', comment: 'Security review completed with zero vulnerabilities.', createdAt: subDays(now, 4) },
+      { taskId: ft1.id, userId: manager.id, type: 'status_change', field: 'status', oldValue: 'In Review', newValue: 'Done', createdAt: subDays(now, 4) },
     ],
   });
 
-  // APEX-2: In Review (Blocker for APEX-3)
-  const apex2 = await prisma.task.create({
+  // FINTECH-2: In Review (Blocker for FINTECH-3, Overdue)
+  const ft2 = await prisma.task.create({
     data: {
       taskNumber: 2,
-      key: 'APEX-2',
-      projectId: projApex.id,
-      title: 'Implement trade execution WebSocket pipeline',
-      description: 'Stream order book depth and live trade ticks over TLS WebSocket with automatic reconnects.',
+      key: 'FINTECH-2',
+      projectId: projFintech.id,
+      title: 'Implement live trading engine WebSocket stream',
+      description: 'Stream real-time exchange orders and price tickers over secure WebSockets.',
       priority: 'urgent',
       status: 'In Review',
-      dueDate: subDays(now, 2), // OVERDUE!
+      dueDate: subDays(now, 2), // OVERDUE
       createdById: manager.id,
       createdAt: subDays(now, 8),
     },
   });
   await prisma.taskAssignee.createMany({
     data: [
-      { taskId: apex2.id, userId: member1.id },
-      { taskId: apex2.id, userId: member2.id },
+      { taskId: ft2.id, userId: member1.id },
+      { taskId: ft2.id, userId: member2.id },
     ],
   });
   await prisma.taskActivity.createMany({
     data: [
-      { taskId: apex2.id, userId: manager.id, type: 'created', newValue: 'Backlog', createdAt: subDays(now, 8) },
-      { taskId: apex2.id, userId: member1.id, type: 'status_change', field: 'status', oldValue: 'Backlog', newValue: 'In Progress', createdAt: subDays(now, 6) },
-      { taskId: apex2.id, userId: member2.id, type: 'status_change', field: 'status', oldValue: 'In Progress', newValue: 'In Review', createdAt: subDays(now, 1) },
-      { taskId: apex2.id, userId: member2.id, type: 'comment', comment: 'Load testing achieved 10k msgs/sec. Ready for manager sign-off.', createdAt: subDays(now, 1) },
+      { taskId: ft2.id, userId: manager.id, type: 'created', newValue: 'Backlog', createdAt: subDays(now, 8) },
+      { taskId: ft2.id, userId: member1.id, type: 'status_change', field: 'status', oldValue: 'Backlog', newValue: 'In Progress', createdAt: subDays(now, 6) },
+      { taskId: ft2.id, userId: member2.id, type: 'status_change', field: 'status', oldValue: 'In Progress', newValue: 'In Review', createdAt: subDays(now, 1) },
+      { taskId: ft2.id, userId: member2.id, type: 'comment', comment: 'Benchmark passed 10k events/sec. Ready for sign-off.', createdAt: subDays(now, 1) },
     ],
   });
 
-  // APEX-3: In Progress, Blocked by APEX-2
-  const apex3 = await prisma.task.create({
+  // FINTECH-3: In Progress, Blocked by FINTECH-2
+  const ft3 = await prisma.task.create({
     data: {
       taskNumber: 3,
-      key: 'APEX-3',
-      projectId: projApex.id,
-      title: 'Build real-time portfolio risk heatmap UI',
-      description: 'Visual grid displaying value-at-risk (VaR) and exposure by currency pair.',
+      key: 'FINTECH-3',
+      projectId: projFintech.id,
+      title: 'Build financial portfolio risk analytics heatmap UI',
+      description: 'Visual risk matrix calculating exposure per asset class. Blocked until FINTECH-2 is Done.',
       priority: 'high',
       status: 'In Progress',
       dueDate: addDays(now, 3), // Due this week
@@ -208,50 +212,49 @@ async function main() {
       createdAt: subDays(now, 5),
     },
   });
-  await prisma.taskAssignee.create({ data: { taskId: apex3.id, userId: member2.id } });
-  await prisma.taskDependency.create({ data: { taskId: apex3.id, blockedById: apex2.id } });
+  await prisma.taskAssignee.create({ data: { taskId: ft3.id, userId: member2.id } });
+  await prisma.taskDependency.create({ data: { taskId: ft3.id, blockedById: ft2.id } });
   await prisma.taskActivity.createMany({
     data: [
-      { taskId: apex3.id, userId: member1.id, type: 'created', newValue: 'Backlog', createdAt: subDays(now, 5) },
-      { taskId: apex3.id, userId: member1.id, type: 'dependency_add', field: 'blocker', newValue: 'APEX-2', createdAt: subDays(now, 5) },
-      { taskId: apex3.id, userId: member2.id, type: 'status_change', field: 'status', oldValue: 'Backlog', newValue: 'In Progress', createdAt: subDays(now, 3) },
+      { taskId: ft3.id, userId: member1.id, type: 'created', newValue: 'Backlog', createdAt: subDays(now, 5) },
+      { taskId: ft3.id, userId: member1.id, type: 'dependency_add', field: 'blocker', newValue: 'FINTECH-2', createdAt: subDays(now, 5) },
+      { taskId: ft3.id, userId: member2.id, type: 'status_change', field: 'status', oldValue: 'Backlog', newValue: 'In Progress', createdAt: subDays(now, 3) },
     ],
   });
 
-  // APEX-4: Blocked status (Blocked from In Progress)
-  const apex4 = await prisma.task.create({
+  // FINTECH-4: Blocked status (Blocked from In Progress)
+  const ft4 = await prisma.task.create({
     data: {
       taskNumber: 4,
-      key: 'APEX-4',
-      projectId: projApex.id,
-      title: 'Integrate SWIFT ISO-20022 wire payout gateway',
-      description: 'Process batch cross-border payout XML files according to banking partner specification.',
+      key: 'FINTECH-4',
+      projectId: projFintech.id,
+      title: 'Integrate SWIFT wire transfer international payout API',
+      description: 'Process cross-border ISO banking files. Currently blocked waiting for bank sandbox API keys.',
       priority: 'urgent',
       status: 'Blocked',
       previousStatus: 'In Progress',
-      dueDate: subDays(now, 4), // OVERDUE!
+      dueDate: subDays(now, 4), // OVERDUE
       createdById: manager.id,
       createdAt: subDays(now, 10),
     },
   });
-  await prisma.taskAssignee.create({ data: { taskId: apex4.id, userId: member1.id } });
+  await prisma.taskAssignee.create({ data: { taskId: ft4.id, userId: member1.id } });
   await prisma.taskActivity.createMany({
     data: [
-      { taskId: apex4.id, userId: manager.id, type: 'created', newValue: 'Backlog', createdAt: subDays(now, 10) },
-      { taskId: apex4.id, userId: member1.id, type: 'status_change', field: 'status', oldValue: 'Backlog', newValue: 'In Progress', createdAt: subDays(now, 7) },
-      { taskId: apex4.id, userId: member1.id, type: 'status_change', field: 'status', oldValue: 'In Progress', newValue: 'Blocked', comment: 'Waiting on sandbox credentials from partner bank API team.', createdAt: subDays(now, 4) },
-      { taskId: apex4.id, userId: member1.id, type: 'comment', comment: 'Sent follow up email to bank compliance officer.', createdAt: subDays(now, 2) },
+      { taskId: ft4.id, userId: manager.id, type: 'created', newValue: 'Backlog', createdAt: subDays(now, 10) },
+      { taskId: ft4.id, userId: member1.id, type: 'status_change', field: 'status', oldValue: 'Backlog', newValue: 'In Progress', createdAt: subDays(now, 7) },
+      { taskId: ft4.id, userId: member1.id, type: 'status_change', field: 'status', oldValue: 'In Progress', newValue: 'Blocked', comment: 'Waiting on banking partner compliance team for production sandbox keys.', createdAt: subDays(now, 4) },
     ],
   });
 
-  // APEX-5: Backlog
-  const apex5 = await prisma.task.create({
+  // FINTECH-5: Backlog
+  const ft5 = await prisma.task.create({
     data: {
       taskNumber: 5,
-      key: 'APEX-5',
-      projectId: projApex.id,
-      title: 'Automate tax withholding calculation reports',
-      description: 'Generate annual Form 1099-B and local transaction tax summaries for end clients.',
+      key: 'FINTECH-5',
+      projectId: projFintech.id,
+      title: 'Automate annual tax withholding summary statements',
+      description: 'Generate customer 1099-B tax reports and PDF downloads.',
       priority: 'low',
       status: 'Backlog',
       dueDate: addDays(now, 14),
@@ -260,18 +263,18 @@ async function main() {
     },
   });
   await prisma.taskActivity.create({
-    data: { taskId: apex5.id, userId: manager.id, type: 'created', newValue: 'Backlog', createdAt: subDays(now, 3) },
+    data: { taskId: ft5.id, userId: manager.id, type: 'created', newValue: 'Backlog', createdAt: subDays(now, 3) },
   });
 
-  // ---------------- NOVA TASKS ----------------
-  // NOVA-1: Done
-  const nova1 = await prisma.task.create({
+  // ---------------- HEALTH TASKS ----------------
+  // HEALTH-1: Done
+  const hl1 = await prisma.task.create({
     data: {
       taskNumber: 1,
-      key: 'NOVA-1',
-      projectId: projNova.id,
-      title: 'Setup WebRTC peer-to-peer encrypted video rooms',
-      description: 'Peer connection orchestration with STUN/TURN failover servers.',
+      key: 'HEALTH-1',
+      projectId: projHealth.id,
+      title: 'Setup WebRTC encrypted peer-to-peer video rooms',
+      description: 'HIPAA-compliant encrypted video consultation rooms with TURN relay server.',
       priority: 'urgent',
       status: 'Done',
       dueDate: subDays(now, 12),
@@ -280,24 +283,24 @@ async function main() {
       createdAt: subDays(now, 18),
     },
   });
-  await prisma.taskAssignee.create({ data: { taskId: nova1.id, userId: member2.id } });
+  await prisma.taskAssignee.create({ data: { taskId: hl1.id, userId: member2.id } });
   await prisma.taskActivity.createMany({
     data: [
-      { taskId: nova1.id, userId: manager.id, type: 'created', newValue: 'Backlog', createdAt: subDays(now, 18) },
-      { taskId: nova1.id, userId: member2.id, type: 'status_change', field: 'status', oldValue: 'Backlog', newValue: 'In Progress', createdAt: subDays(now, 14) },
-      { taskId: nova1.id, userId: member2.id, type: 'status_change', field: 'status', oldValue: 'In Progress', newValue: 'In Review', createdAt: subDays(now, 8) },
-      { taskId: nova1.id, userId: manager.id, type: 'status_change', field: 'status', oldValue: 'In Review', newValue: 'Done', createdAt: subDays(now, 6) },
+      { taskId: hl1.id, userId: manager.id, type: 'created', newValue: 'Backlog', createdAt: subDays(now, 18) },
+      { taskId: hl1.id, userId: member2.id, type: 'status_change', field: 'status', oldValue: 'Backlog', newValue: 'In Progress', createdAt: subDays(now, 14) },
+      { taskId: hl1.id, userId: member2.id, type: 'status_change', field: 'status', oldValue: 'In Progress', newValue: 'In Review', createdAt: subDays(now, 8) },
+      { taskId: hl1.id, userId: manager.id, type: 'status_change', field: 'status', oldValue: 'In Review', newValue: 'Done', createdAt: subDays(now, 6) },
     ],
   });
 
-  // NOVA-2: In Progress
-  const nova2 = await prisma.task.create({
+  // HEALTH-2: In Progress (Due this week)
+  const hl2 = await prisma.task.create({
     data: {
       taskNumber: 2,
-      key: 'NOVA-2',
-      projectId: projNova.id,
-      title: 'FHIR EHR medical records sync adapter',
-      description: 'Bi-directional sync of patient allergies, active prescriptions, and diagnosis codes.',
+      key: 'HEALTH-2',
+      projectId: projHealth.id,
+      title: 'FHIR hospital electronic health record synchronization',
+      description: 'Sync patient medical history, allergies, and diagnoses securely.',
       priority: 'high',
       status: 'In Progress',
       dueDate: addDays(now, 2), // Due this week
@@ -307,75 +310,75 @@ async function main() {
   });
   await prisma.taskAssignee.createMany({
     data: [
-      { taskId: nova2.id, userId: member2.id },
-      { taskId: nova2.id, userId: member3.id },
+      { taskId: hl2.id, userId: member2.id },
+      { taskId: hl2.id, userId: member3.id },
     ],
   });
   await prisma.taskActivity.createMany({
     data: [
-      { taskId: nova2.id, userId: manager.id, type: 'created', newValue: 'Backlog', createdAt: subDays(now, 7) },
-      { taskId: nova2.id, userId: member3.id, type: 'status_change', field: 'status', oldValue: 'Backlog', newValue: 'In Progress', createdAt: subDays(now, 4) },
+      { taskId: hl2.id, userId: manager.id, type: 'created', newValue: 'Backlog', createdAt: subDays(now, 7) },
+      { taskId: hl2.id, userId: member3.id, type: 'status_change', field: 'status', oldValue: 'Backlog', newValue: 'In Progress', createdAt: subDays(now, 4) },
     ],
   });
 
-  // NOVA-3: Overdue In Progress
-  const nova3 = await prisma.task.create({
+  // HEALTH-3: Overdue In Progress
+  const hl3 = await prisma.task.create({
     data: {
       taskNumber: 3,
-      key: 'NOVA-3',
-      projectId: projNova.id,
-      title: 'E-Prescription digital signature & pharmacy routing',
-      description: 'Cryptographic signature using doctor PKI smart cards and automated routing to local pharmacies.',
+      key: 'HEALTH-3',
+      projectId: projHealth.id,
+      title: 'Digital e-prescription cryptographic signature system',
+      description: 'Doctor smart card digital signature routing to certified partner pharmacies.',
       priority: 'urgent',
       status: 'In Progress',
-      dueDate: subDays(now, 3), // OVERDUE!
+      dueDate: subDays(now, 3), // OVERDUE
       createdById: manager.id,
       createdAt: subDays(now, 9),
     },
   });
-  await prisma.taskAssignee.create({ data: { taskId: nova3.id, userId: member3.id } });
+  await prisma.taskAssignee.create({ data: { taskId: hl3.id, userId: member3.id } });
   await prisma.taskActivity.createMany({
     data: [
-      { taskId: nova3.id, userId: manager.id, type: 'created', newValue: 'Backlog', createdAt: subDays(now, 9) },
-      { taskId: nova3.id, userId: member3.id, type: 'status_change', field: 'status', oldValue: 'Backlog', newValue: 'In Progress', createdAt: subDays(now, 6) },
+      { taskId: hl3.id, userId: manager.id, type: 'created', newValue: 'Backlog', createdAt: subDays(now, 9) },
+      { taskId: hl3.id, userId: member3.id, type: 'status_change', field: 'status', oldValue: 'Backlog', newValue: 'In Progress', createdAt: subDays(now, 6) },
     ],
   });
 
-  // ---------------- ORBIT TASKS ----------------
-  // ORBIT-1: Done (completed this week)
-  const orbit1 = await prisma.task.create({
+  // ---------------- LOGISTICS TASKS ----------------
+  // LOGISTICS-1: Done (completed this week)
+  const lg1 = await prisma.task.create({
     data: {
       taskNumber: 1,
-      key: 'ORBIT-1',
-      projectId: projOrbit.id,
-      title: 'Automate AIS marine satellite telemetry ingestion',
-      description: 'Ingest vessel position, speed over ground, and heading stream every 60 seconds.',
+      key: 'LOGISTICS-1',
+      projectId: projLogistics.id,
+      title: 'Automate vessel satellite GPS telemetry stream',
+      description: 'Ingest ocean freight vessel position, heading, and speed every minute.',
       priority: 'high',
       status: 'Done',
       dueDate: subDays(now, 3),
-      completedAt: subDays(now, 1), // Completed this week!
+      completedAt: subDays(now, 1), // Completed this week
       createdById: manager.id,
       createdAt: subDays(now, 12),
     },
   });
-  await prisma.taskAssignee.create({ data: { taskId: orbit1.id, userId: member1.id } });
+  await prisma.taskAssignee.create({ data: { taskId: lg1.id, userId: member1.id } });
   await prisma.taskActivity.createMany({
     data: [
-      { taskId: orbit1.id, userId: manager.id, type: 'created', newValue: 'Backlog', createdAt: subDays(now, 12) },
-      { taskId: orbit1.id, userId: member1.id, type: 'status_change', field: 'status', oldValue: 'Backlog', newValue: 'In Progress', createdAt: subDays(now, 8) },
-      { taskId: orbit1.id, userId: member1.id, type: 'status_change', field: 'status', oldValue: 'In Progress', newValue: 'In Review', createdAt: subDays(now, 2) },
-      { taskId: orbit1.id, userId: manager.id, type: 'status_change', field: 'status', oldValue: 'In Review', newValue: 'Done', createdAt: subDays(now, 1) },
+      { taskId: lg1.id, userId: manager.id, type: 'created', newValue: 'Backlog', createdAt: subDays(now, 12) },
+      { taskId: lg1.id, userId: member1.id, type: 'status_change', field: 'status', oldValue: 'Backlog', newValue: 'In Progress', createdAt: subDays(now, 8) },
+      { taskId: lg1.id, userId: member1.id, type: 'status_change', field: 'status', oldValue: 'In Progress', newValue: 'In Review', createdAt: subDays(now, 2) },
+      { taskId: lg1.id, userId: manager.id, type: 'status_change', field: 'status', oldValue: 'In Review', newValue: 'Done', createdAt: subDays(now, 1) },
     ],
   });
 
-  // ORBIT-2: In Progress
-  const orbit2 = await prisma.task.create({
+  // LOGISTICS-2: In Progress
+  const lg2 = await prisma.task.create({
     data: {
       taskNumber: 2,
-      key: 'ORBIT-2',
-      projectId: projOrbit.id,
-      title: 'Port congestion ETA prediction ML model',
-      description: 'Random Forest regressor estimating berth turnaround delay based on queue length and weather.',
+      key: 'LOGISTICS-2',
+      projectId: projLogistics.id,
+      title: 'Port congestion ETA prediction machine learning model',
+      description: 'Estimate container unloading turnaround times using harbor queue length data.',
       priority: 'medium',
       status: 'In Progress',
       dueDate: addDays(now, 4), // Due this week
@@ -383,24 +386,37 @@ async function main() {
       createdAt: subDays(now, 6),
     },
   });
-  await prisma.taskAssignee.create({ data: { taskId: orbit2.id, userId: member3.id } });
+  await prisma.taskAssignee.create({ data: { taskId: lg2.id, userId: member3.id } });
   await prisma.taskActivity.createMany({
     data: [
-      { taskId: orbit2.id, userId: manager.id, type: 'created', newValue: 'Backlog', createdAt: subDays(now, 6) },
-      { taskId: orbit2.id, userId: member3.id, type: 'status_change', field: 'status', oldValue: 'Backlog', newValue: 'In Progress', createdAt: subDays(now, 4) },
+      { taskId: lg2.id, userId: manager.id, type: 'created', newValue: 'Backlog', createdAt: subDays(now, 6) },
+      { taskId: lg2.id, userId: member3.id, type: 'status_change', field: 'status', oldValue: 'Backlog', newValue: 'In Progress', createdAt: subDays(now, 4) },
     ],
   });
 
-  // Historical completed tasks over the last 8 weeks for trend chart
-  for (let w = 1; w <= 7; w++) {
-    const pastDate = subWeeks(now, w);
-    const pastTask = await prisma.task.create({
+  // ---------------- 8-WEEK COMPLETION DATA (Natural tasks in Fintech project) ----------------
+  const pastDeliverables = [
+    'Deliverable: Production Database Infrastructure & Replication',
+    'Deliverable: Multi-Currency Exchange Rate Conversion Service',
+    'Deliverable: Automated Continuous Integration Testing Pipeline',
+    'Deliverable: Role-Based Authorization Policy Security Audit',
+    'Deliverable: End-to-End KYC Customer Verification Microservice',
+    'Deliverable: High-Throughput Redis Cache Layer Implementation',
+    'Deliverable: Initial Product Architecture & Tech Stack Scaffolding',
+  ];
+
+  for (let i = 0; i < pastDeliverables.length; i++) {
+    const weekIndex = i + 1;
+    const taskNum = 6 + i;
+    const pastDate = subWeeks(now, weekIndex);
+
+    const histTask = await prisma.task.create({
       data: {
-        taskNumber: 10 + w,
-        key: `HIST-${w}`,
-        projectId: projApex.id,
-        title: `Historical sprint sprint milestone delivery #${w}`,
-        description: `Delivered milestone deliverables for iteration week ${w}.`,
+        taskNumber: taskNum,
+        key: `FINTECH-${taskNum}`,
+        projectId: projFintech.id,
+        title: pastDeliverables[i],
+        description: `Delivered and signed off by client during Sprint Week ${weekIndex}.`,
         priority: 'medium',
         status: 'Done',
         dueDate: pastDate,
@@ -409,16 +425,10 @@ async function main() {
         createdAt: subWeeks(pastDate, 1),
       },
     });
-    await prisma.taskAssignee.create({ data: { taskId: pastTask.id, userId: member1.id } });
+    await prisma.taskAssignee.create({ data: { taskId: histTask.id, userId: member1.id } });
   }
 
-  console.log('✅ Seed completed successfully!');
-  console.log('----------------------------------------------------');
-  console.log('Manager Login : manager@company.com / password123');
-  console.log('Member 1 Login: sarah@company.com   / password123 (Apex, Orbit)');
-  console.log('Member 2 Login: david@company.com   / password123 (Apex, Nova)');
-  console.log('Member 3 Login: elena@company.com   / password123 (Nova, Orbit)');
-  console.log('----------------------------------------------------');
+  console.log('✅ Seed completed successfully with clear, intuitive project and task names!');
 }
 
 main()
