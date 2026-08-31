@@ -27,6 +27,110 @@ In client services companies (software consultancies, agencies, engineering firm
 
 ---
 
+## 🏗️ System Architecture & Data Flow
+
+```mermaid
+flowchart TB
+    %% Styling
+    classDef client fill:#1e293b,stroke:#6366f1,stroke-width:2px,color:#fff
+    classDef auth fill:#312e81,stroke:#818cf8,stroke-width:2px,color:#fff
+    classDef api fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#fff
+    classDef engine fill:#14532d,stroke:#4ade80,stroke-width:2px,color:#fff
+    classDef db fill:#451a03,stroke:#fb923c,stroke-width:2px,color:#fff
+
+    subgraph ClientLayer ["1. Client-Side Presentation Tier (React 18 & Tailwind)"]
+        UI["🖥️ Web Browser UI"]
+        DASH["📊 Executive Dashboard"]
+        PROJ["📁 Projects Portfolio"]
+        TASKS["📋 Tasks Table & Kanban"]
+        MYTASKS["👤 My Tasks Workbench"]
+        ALERTS["🚨 Overdue Alert Center"]
+        MODAL["🔍 Task Detail & Audit Modal"]
+    end
+
+    subgraph SecurityLayer ["2. Security & Identity Gateway"]
+        AUTH_GATE{"🔒 Session Gate"}
+        JWT["Signed JWT Cookie"]
+        GOOG["Google OAuth 2.0"]
+        RBAC["🛡️ Server RBAC Scope Guard\n(Manager vs Member Project Scope)"]
+    end
+
+    subgraph EngineLayer ["3. Backend Business Logic & Rules Engine (Next.js 14 API)"]
+        SM["🔄 Finite State Machine\n(Backlog → In Progress → In Review → Done)"]
+        DEP["🛑 Blocker Dependency Engine\n(Verify all blockers are Done)"]
+        BULK["⚡ Granular Bulk Action Engine\n(Per-task success/failure reporting)"]
+        UNASSIGN["👥 Automatic Task Unassignment\n(Triggered on Project Member Removal)"]
+        ALERTMGR["⏱️ Overdue Alert Invalidator\n(Auto-resets dismissal on due date change)"]
+    end
+
+    subgraph StorageLayer ["4. Relational Database Tier (Prisma ORM & PostgreSQL / Supabase)"]
+        PRISMA["⚡ Prisma ORM (ACID Transactions)"]
+        T_USERS["👤 users"]
+        T_PROJ["📁 projects & project_members"]
+        T_TASKS["📋 tasks & task_assignees"]
+        T_DEP["🔗 task_dependencies"]
+        T_ACT["📜 task_activities (Immutable Audit Log)"]
+        T_ALERT["🔔 task_alert_dismissals"]
+    end
+
+    %% Connections
+    UI --> DASH & PROJ & TASKS & MYTASKS & ALERTS & MODAL
+    DASH & PROJ & TASKS & MYTASKS & ALERTS & MODAL --> AUTH_GATE
+
+    AUTH_GATE --> JWT & GOOG
+    AUTH_GATE --> RBAC
+    
+    RBAC --> SM
+    RBAC --> DEP
+    RBAC --> BULK
+    RBAC --> UNASSIGN
+    RBAC --> ALERTMGR
+
+    SM & DEP & BULK & UNASSIGN & ALERTMGR --> PRISMA
+    PRISMA --> T_USERS & T_PROJ & T_TASKS & T_DEP & T_ACT & T_ALERT
+
+    class UI,DASH,PROJ,TASKS,MYTASKS,ALERTS,MODAL client
+    class AUTH_GATE,JWT,GOOG,RBAC auth
+    class SM,DEP,BULK,UNASSIGN,ALERTMGR engine
+    class PRISMA,T_USERS,T_PROJ,T_TASKS,T_DEP,T_ACT,T_ALERT db
+```
+
+---
+
+## 🔄 Task Lifecycle State Machine & Blocker Flow
+
+```mermaid
+stateDiagram-v2
+    [*] --> Backlog: Created
+
+    Backlog --> In_Progress: Start Work
+    
+    In_Progress --> In_Review: Submit for Review
+    In_Progress --> Blocked: Blocked by External Factor
+    In_Progress --> Backlog: Return to Backlog
+
+    In_Review --> Done: Approve (Only if all Blocker Tasks are Done!)
+    In_Review --> In_Progress: Request Changes
+    In_Review --> Blocked: Blocked by Review Dependency
+    In_Review --> Backlog: Demote
+
+    Blocked --> In_Progress: Unblock (if blocked from In Progress)
+    Blocked --> In_Review: Unblock (if blocked from In Review)
+
+    Done --> In_Progress: Reopen Task
+    Done --> Backlog: Reopen Task
+    Done --> [*]: Archive
+
+    note right of In_Review
+      🛑 Blocker Rule:
+      Server evaluates task_dependencies.
+      If any blocker != 'Done',
+      the transition to 'Done' is rejected!
+    end note
+```
+
+---
+
 ## 🌟 10 Core Engineering Highlights
 
 | Feature | Engineering Implementation |
@@ -41,38 +145,6 @@ In client services companies (software consultancies, agencies, engineering firm
 | 📜 **Immutable Audit Timeline** | Append-only `task_activities` journal recording every status move, field change, assignment, and comment with timestamps and author signatures. |
 | 🚨 **Self-Invalidating Overdue Alerts** | Overdue alert center with dynamic navbar badge count. User dismissals automatically reset if a manager reschedules the due date. |
 | 🌐 **Google OAuth 2.0 & JWT Auth** | Dual authentication supporting Google Cloud OAuth 2.0 (redirect & code exchange) and bcrypt email/password with secure HTTP-only cookies. |
-
----
-
-## 🏗️ High-Level System Architecture
-
-PulseTrack adopts a **modular full-stack architecture** separating presentation, server business rules, and relational storage:
-
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                   Frontend Presentation Layer (React 18)               │
-│  - Executive Dashboard           - Client Projects Portfolio           │
-│  - Table & Kanban Task Views     - Personal "My Tasks" Workbench       │
-│  - Task Detail Modal (Timeline)  - Overdue Alert Center                │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │ HTTP / JSON (JWT Session Cookie)
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                   Next.js 14 API Layer & Services Engine               │
-│  - Server RBAC Access Scopes     - State Machine Engine (Transitions)  │
-│  - Google OAuth 2.0 Handler      - Granular Bulk Execution Service     │
-│  - Server Search & Filter Engine - Alert Invalidation Subsystem        │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │ Prisma ORM (ACID Transactions)
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                 Relational Database (PostgreSQL / Supabase)            │
-│  - users                         - projects                            │
-│  - project_members               - tasks (keys, status, previousStatus)│
-│  - task_assignees                - task_dependencies (Blockers)        │
-│  - task_activities (Audit Log)   - task_alert_dismissals (Snapshots)   │
-└────────────────────────────────────────────────────────────────────────┘
-```
 
 ---
 

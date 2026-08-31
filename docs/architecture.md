@@ -1,95 +1,167 @@
-# Architecture
+# System Architecture & Technical Design
 
 ## What are the moving pieces, and how do they talk to each other?
 
-The system is composed of five core architectural layers designed for strict data integrity and predictable state management:
+The system is composed of four primary architectural layers designed for strict data integrity, server-enforced security boundaries, and predictable state transitions:
 
-1. **Client-Side Presentation Layer (React 18 & Tailwind CSS)**
-   - **Views**: Executive Dashboard, Client Projects Grid, Global Task Finder (Table & Kanban), Personal My Tasks, and Overdue Alert Center.
-   - **State & Context**: `AuthContext` manages user identity, session state, rapid role switching for evaluation, and automatic background polling for overdue alert counters.
-   - **Communication**: Interacts with the backend solely via typed asynchronous HTTP JSON requests (`fetch` API), handling response envelopes, validation error strings, and partial-batch bulk operation reports.
+```mermaid
+flowchart TB
+    %% Styling
+    classDef client fill:#1e293b,stroke:#6366f1,stroke-width:2px,color:#fff
+    classDef auth fill:#312e81,stroke:#818cf8,stroke-width:2px,color:#fff
+    classDef engine fill:#14532d,stroke:#4ade80,stroke-width:2px,color:#fff
+    classDef db fill:#451a03,stroke:#fb923c,stroke-width:2px,color:#fff
 
-2. **API & Business Logic Routing Layer (Next.js 14 App Router)**
-   - **Endpoints**: Modular REST route handlers (`/api/auth/*`, `/api/projects/*`, `/api/tasks/*`, `/api/alerts/*`, `/api/dashboard/*`).
-   - **Authentication & RBAC Middleware**: Verifies cryptographic JWT tokens stored in HTTP-only cookies or Authorization Bearer headers. Computes project accessibility scopes so regular members never query or mutate projects outside their assignment.
-   - **Rules Engine (`lib/state-machine.ts`)**: Enforces strict lifecycle state transition rules (`Backlog` → `In Progress` → `In Review` → `Done`, `Blocked` unblocking preservation, and blocker dependency checks) before any database write.
+    subgraph ClientLayer ["1. Client-Side Presentation Tier (React 18 & Tailwind CSS)"]
+        UI["🖥️ Browser Client UI"]
+        DASH["📊 Executive Dashboard\n(Capacity Matrix & 8-Week Velocity)"]
+        PROJ["📁 Client Projects Portfolio\n(Creation, Team Scopes, Archival)"]
+        TASKS["📋 Global Task Finder\n(Table & Kanban Board)"]
+        MYTASKS["👤 Personal 'My Tasks' Workbench"]
+        ALERTS["🚨 Overdue Alert Center"]
+        MODAL["🔍 Task Detail & Audit Timeline Modal"]
+    end
 
-3. **Data Access & Relational Persistence Layer (Prisma ORM & SQLite / Postgres)**
-   - **Prisma Client**: Provides type-safe queries, automatic relationship joins, cascading deletes where appropriate, and ACID transactions (`prisma.$transaction`) for compound actions (e.g., project member removal with automatic task unassignment, status transitions with audit timeline logging).
-   - **Database Engine**: Relational storage enforcing foreign key constraints, indexes on frequently filtered fields (`[projectId, status]`, `[dueDate]`, `[userId]`), and unique constraints (`[taskId, userId]` for assignees, `[projectId, userId]` for memberships).
+    subgraph SecurityLayer ["2. Authentication & Authorization Gateway"]
+        AUTH_GATE{"🔒 Session Gate"}
+        JWT["Signed JWT Cookie (Jose)"]
+        GOOG["Google OAuth 2.0 Provider"]
+        RBAC["🛡️ Server RBAC Scope Guard\n(Manager vs Member Project Scope)"]
+    end
 
-4. **Immutable Audit Trail Subsystem (`task_activities`)**
-   - Every state transition, title/description edit, priority change, due date change, assignment/unassignment, and user comment writes an append-only row to `task_activities`. No API routes exist to mutate or delete activity history.
+    subgraph EngineLayer ["3. Backend Business Logic & Rules Services"]
+        SM["🔄 Finite State Machine\n(Backlog → In Progress → In Review → Done)"]
+        DEP["🛑 Blocker Dependency Evaluator\n(Verify all blockers are Done)"]
+        BULK["⚡ Granular Bulk Action Engine\n(Per-task success/failure reporting)"]
+        UNASSIGN["👥 Automatic Task Unassignment\n(Atomic Project Member Removal)"]
+        ALERTMGR["⏱️ Overdue Alert Invalidator\n(Auto-resets dismissal on due date change)"]
+    end
 
-5. **Alert Invalidation Engine (`task_alert_dismissals`)**
-   - Monitors overdue unfinished tasks (`dueDate < NOW() AND status != 'Done'`).
-   - Tracks dismissal timestamps alongside `dueDateAtDismissal`. When a task's due date is updated in the database, all existing dismissals for that task are atomically cleared, restoring visibility to assigned users.
+    subgraph StorageLayer ["4. Relational Database Tier (Prisma ORM & PostgreSQL / Supabase)"]
+        PRISMA["⚡ Prisma ORM (ACID Transactions)"]
+        T_USERS["👤 users"]
+        T_PROJ["📁 projects & project_members"]
+        T_TASKS["📋 tasks & task_assignees"]
+        T_DEP["🔗 task_dependencies"]
+        T_ACT["📜 task_activities (Immutable Audit Log)"]
+        T_ALERT["🔔 task_alert_dismissals"]
+    end
 
+    %% Connections
+    UI --> DASH & PROJ & TASKS & MYTASKS & ALERTS & MODAL
+    DASH & PROJ & TASKS & MYTASKS & ALERTS & MODAL --> AUTH_GATE
+
+    AUTH_GATE --> JWT & GOOG
+    AUTH_GATE --> RBAC
+    
+    RBAC --> SM
+    RBAC --> DEP
+    RBAC --> BULK
+    RBAC --> UNASSIGN
+    RBAC --> ALERTMGR
+
+    SM & DEP & BULK & UNASSIGN & ALERTMGR --> PRISMA
+    PRISMA --> T_USERS & T_PROJ & T_TASKS & T_DEP & T_ACT & T_ALERT
+
+    class UI,DASH,PROJ,TASKS,MYTASKS,ALERTS,MODAL client
+    class AUTH_GATE,JWT,GOOG,RBAC auth
+    class SM,DEP,BULK,UNASSIGN,ALERTMGR engine
+    class PRISMA,T_USERS,T_PROJ,T_TASKS,T_DEP,T_ACT,T_ALERT db
 ```
-┌────────────────────────────────────────────────────────────────────────┐
-│                        Browser Client (React UI)                       │
-│  - Dashboard / Analytics      - Projects Portfolio   - Global Finder   │
-│  - Kanban Board View          - Task Detail Modal    - Alerts Drawer   │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │ HTTP / JSON (JWT Session Cookie)
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                   Next.js 14 API Layer & Route Handlers                │
-│  - RBAC Scope Validator       - Task State Machine Engine              │
-│  - Bulk Execution Engine      - Server-Side Query / Filter / Paginate  │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │ Prisma ORM (ACID Transactions)
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                   Relational Database (SQLite / Postgres)              │
-│  - users             - projects             - project_members          │
-│  - tasks             - task_assignees       - task_dependencies        │
-│  - task_activities (Immutable Audit Log)    - task_alert_dismissals    │
-└────────────────────────────────────────────────────────────────────────┘
+
+---
+
+## Task Lifecycle State Machine & Blocker Rules
+
+```mermaid
+stateDiagram-v2
+    [*] --> Backlog: Task Created
+
+    Backlog --> In_Progress: Start Work
+    
+    In_Progress --> In_Review: Submit for Review
+    In_Progress --> Blocked: Blocked by External Factor (Remembers previousStatus)
+    In_Progress --> Backlog: Return to Backlog
+
+    In_Review --> Done: Move to Done (Only if all Blocker Tasks are Done!)
+    In_Review --> In_Progress: Request Changes
+    In_Review --> Blocked: Blocked by Review Dependency
+    In_Review --> Backlog: Demote
+
+    Blocked --> In_Progress: Unblock (if blocked from In Progress)
+    Blocked --> In_Review: Unblock (if blocked from In Review)
+
+    Done --> In_Progress: Reopen Task
+    Done --> Backlog: Reopen Task
+    Done --> [*]: Project Archival
+
+    note right of In_Review
+      🛑 Blocker Rule:
+      Server queries task_dependencies.
+      If ANY blocker task != 'Done',
+      the transition to 'Done' is rejected with HTTP 400!
+    end note
 ```
 
 ---
 
 ## Where does each piece run?
 
-- **Browser Environment**: Runs the React single-page interface, manages local UI form states, handles client-side transitions, and parses server-rendered CSV streams.
-- **Serverless / Node.js Runtime (Render / Vercel / Docker)**: Runs the Next.js App Router server, verifies JWT signatures with secret keys kept strictly in environment variables, validates payload schemas, and executes business logic rules.
-- **Database Server (Local SQLite for zero-config portability / Supabase PostgreSQL for cloud)**: Houses relational data on persistent NVMe/SSD storage, enforcing relational integrity, foreign key cascades, and unique constraints.
+- **Browser Environment**: Runs the single-page React interface, manages form validation, renders animated charts, and consumes REST endpoints via typed fetch envelopes.
+- **Serverless / Node.js Runtime (Vercel / Render)**: Executes Next.js 14 API routes, verifies cryptographic JWT signatures, enforces project accessibility scopes, and evaluates state machine transitions.
+- **Relational Database (PostgreSQL / Supabase / SQLite)**: Enforces foreign key referential integrity, unique constraints (`[taskId, userId]`, `[projectId, userId]`), index lookups on `[projectId, status]`, and persistent ACID transactions.
 
 ---
 
-## What is the request path for one representative user action, end to end?
+## Request Path for a Representative User Action
 
-### Representative Action: Moving a task from `In Review` to `Done` with dependency checks
+### Action: Transitioning a Task from `In Review` to `Done`
 
-1. **User Action**: The user clicks the **"Move to Done"** action button on the Task Detail Modal for task `APEX-3`.
-2. **Client Dispatch**: The client sends a `PATCH /api/tasks/[id]` request with body `{ "status": "Done" }` accompanied by the `auth_token` HTTP-only cookie.
-3. **Session Verification**: The server extracts the JWT from the cookie, verifies its HMAC SHA-256 signature using `jose`, and retrieves the user record (`user.id`, `user.role`).
-4. **Project Access Check**: If the user is a `member`, the server queries `project_members` to verify that `user.id` is enrolled in `APEX-3`'s parent project (`Apex Fintech`).
-5. **Dependency Blocker Evaluation**:
-   - The server queries `task_dependencies` joined with `tasks` where `taskId = APEX-3.id`.
-   - It identifies that `APEX-2` is configured as a blocker and checks `APEX-2.status`.
-   - *Case A (Blocker Unfinished)*: `APEX-2` is in `In Progress`. The state machine rejects the transition with HTTP 400 and returns `{ "error": "Cannot move task to 'Done' because it is blocked by unfinished tasks: APEX-2 (In Progress). All blocking tasks must be Done first." }`. The modal displays this exact error banner without modifying data.
-   - *Case B (All Blockers Done)*: `APEX-2` is `Done`. The state machine validates the move from `In Review` to `Done` as legal.
-6. **Atomic Database Execution (`prisma.$transaction`)**:
-   - `tasks` table: Updates `status = 'Done'`, `completedAt = NOW()`, `previousStatus = null`, and `updatedAt = NOW()`.
-   - `task_activities` table: Appends an immutable audit row (`type = 'status_change'`, `field = 'status'`, `oldValue = 'In Review'`, `newValue = 'Done'`, `userId = user.id`).
-7. **HTTP Response**: The server returns HTTP 200 with the serialized updated task object and new legal transition options.
-8. **Client UI Update**: The Task Detail Modal updates its status pill to green `Done`, replaces the action buttons with reopen options (`Move to In Progress`, `Move to Backlog`), and prepends the new status event to the timeline feed.
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as 👤 User (Sarah / David)
+    participant UI as 🖥️ React UI (Task Modal)
+    participant API as ⚙️ Next.js Route Handler (/api/tasks/:id)
+    participant Auth as 🔒 Auth & RBAC Guard
+    participant SM as 🔄 State Machine Engine
+    participant DB as 🗄️ PostgreSQL (Prisma)
+
+    User->>UI: Clicks "Move to Done"
+    UI->>API: PATCH /api/tasks/:id { status: "Done" }
+    API->>Auth: Verify JWT session & project membership
+    Auth-->>API: Authorized (user belongs to project)
+    
+    API->>DB: Query task + task_dependencies (blockers)
+    DB-->>API: Returns blockers: [ { key: "FINTECH-2", status: "Done" } ]
+    
+    API->>SM: validateStatusTransition("In Review", "Done", blockers)
+    SM-->>API: ✅ Transition Valid (All blockers are Done)
+    
+    API->>DB: prisma.$transaction:
+    Note over DB: 1. Update task status = "Done", completedAt = NOW()<br/>2. Append to task_activities (Immutable Audit Log)
+    DB-->>API: Transaction Committed
+    
+    API-->>UI: HTTP 200 { task: {...}, legalTransitions: ["In Progress", "Backlog"] }
+    UI->>User: Renders green "Done" pill & appends timeline event
+```
 
 ---
 
 ## What did you decide *not* to build, and why?
 
-1. **Client-Side Task Filtering / In-Memory Pagination**
-   - *Decision*: We deliberately rejected loading all tasks into the browser memory.
-   - *Rationale*: Meeting Goal 6 strictly requires server-side search, filtering, and pagination. In a real-world multi-client company with tens of thousands of historical tasks, loading the full dataset causes browser lag, high memory consumption, and security leaks of project data not assigned to the user.
-2. **WebSocket / Polling Server for Activity Deletion**
-   - *Decision*: We avoided building any delete or edit endpoints for activity logs.
-   - *Rationale*: Goal 9 requires an immutable history that cannot be rewritten even by managers. Omitting mutation APIs entirely guarantees absolute audit trail integrity.
-3. **Complex Nested Dependency Graph Solvers**
-   - *Decision*: We limited dependency enforcement to blocking tasks within the same project rather than building recursive cross-project acyclic graph recalculators.
-   - *Rationale*: Task dependencies in professional services are project-scoped deliverables. Cross-project blocking introduces complex cross-client data leaks and circular deadlocks.
-4. **Third-Party Auth Provider Lock-In (Firebase/Auth0)**
-   - *Decision*: We implemented stateless, signed JWTs with bcrypt password hashing.
-   - *Rationale*: Ensures zero external vendor lock-in, zero cloud billing costs, and 100% self-contained local reproducibility for the evaluation team.
+1. **In-Memory Client-Side Filtering / Pagination**
+   - *Decision*: We deliberately rejected loading all portfolio tasks into browser JavaScript state.
+   - *Rationale*: Meeting Goal 6 strictly requires database-level search, filtering, and pagination. In a real-world multi-client company with tens of thousands of historical tasks, in-memory filtering exhausts browser RAM and causes severe security leaks of confidential project data.
+
+2. **Delete / Mutation Routes for Activity Timelines**
+   - *Decision*: We omitted any edit or delete endpoints for `task_activities`.
+   - *Rationale*: Goal 9 requires an immutable history that cannot be rewritten even by administrators.
+
+3. **Cross-Project Circular Blocker Graphs**
+   - *Decision*: We strictly scoped task blocking dependencies to other tasks within the *same project*.
+   - *Rationale*: Professional services contracts are deliverables within isolated client scopes. Cross-client blocking dependencies create inter-client security hazards and deadlock risks.
+
+4. **External Auth Provider Lock-In**
+   - *Decision*: We built a self-contained JWT engine alongside official Google Cloud OAuth 2.0.
+   - *Rationale*: Guarantees 100% local zero-config evaluation while retaining standard Google cloud sign-in capabilities.
