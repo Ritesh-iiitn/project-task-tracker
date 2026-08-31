@@ -14,6 +14,7 @@ interface AuthContextType {
   loading: boolean;
   alertCount: number;
   login: (email: string, password?: string) => Promise<{ success: boolean; error?: string }>;
+  signup: (name: string, email: string, password: string, role: 'manager' | 'member') => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   switchUser: (email: string) => Promise<void>;
   refreshAlerts: () => Promise<void>;
@@ -86,6 +87,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const signup = async (name: string, email: string, password: string, role: 'manager' | 'member') => {
+    try {
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password, role }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { success: false, error: data.error || 'Signup failed' };
+      }
+      setUser(data.user);
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Network error' };
+    }
+  };
+
   const logout = async () => {
     try {
       await fetch('/api/auth/logout', { method: 'POST' });
@@ -106,6 +125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         loading,
         alertCount,
         login,
+        signup,
         logout,
         switchUser,
         refreshAlerts,
