@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -28,7 +28,7 @@ model User {
 
 model Project {
   id          String          @id @default(uuid())
-  key         String          @unique // e.g. "ACME", "ALPHA"
+  key         String          @unique // e.g. "FINTECH", "HEALTH"
   name        String
   description String?
   ownerId     String
@@ -58,7 +58,7 @@ model ProjectMember {
 model Task {
   id             String          @id @default(uuid())
   taskNumber     Int             // e.g. 1, 2, 3 within project
-  key            String          @unique // e.g. "ACME-1"
+  key            String          @unique // e.g. "FINTECH-1"
   projectId      String
   project        Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
   title          String
