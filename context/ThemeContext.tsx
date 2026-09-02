@@ -17,14 +17,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Check saved theme or system preference
+    // Check saved theme, default to 'light' (white theme)
     const savedTheme = localStorage.getItem('pulsetrack_theme') as Theme | null;
     if (savedTheme) {
       setThemeState(savedTheme);
       applyTheme(savedTheme);
-    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setThemeState('dark');
-      applyTheme('dark');
     } else {
       setThemeState('light');
       applyTheme('light');
