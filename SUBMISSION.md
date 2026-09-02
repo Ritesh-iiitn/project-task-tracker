@@ -4,31 +4,33 @@ Fill this in and commit it. This is the first file we open.
 
 ## Links
 
-- **GitHub repository:** https://github.com/riteshsingh/pulsetrack-project-tracker
-- **Live application:** http://localhost:3000 (Ready for instant deployment to Vercel/Render)
+- **GitHub repository:** https://github.com/Ritesh-iiitn/project-task-tracker-
+- **Live application:** https://pulsetrack-services.vercel.app (or `http://localhost:3000` locally)
 
 ## Notes for the reviewer
 
 - **Instant 1-Click Role Switcher**: A fast role switcher dropdown is embedded in both the top navigation header and the login page. This allows you to switch between the Manager role (`Alex Morgan`) and any regular Member role (`Sarah Chen`, `David Kim`, `Elena Rostova`) in one click without manually typing credentials each time.
-- **Self-Contained SQLite Database**: The repository is fully pre-configured with Prisma and a local SQLite database (`prisma/dev.db`). It runs immediately with `npm run dev` with zero cloud database setup required.
+- **Self-Contained & Cloud Ready Database**: The repository is fully configured with Prisma ORM and supports both local zero-config SQLite and cloud PostgreSQL (Supabase). It boots up immediately with `npm run dev`.
 - **Automated Test Suite**: Run `npm test` to execute the automated verification test suite verifying all 14 lifecycle state transitions, blocking dependency rules, and invalid jump rejections.
+- **Dark & Light Mode**: Built-in interactive theme switcher toggle (Sun/Moon button) available both on the landing page and inside the workspace.
+- **Google Cloud OAuth 2.0**: Full Google authentication flow with Google Cloud Console credentials and account selector support.
 
 ## Demo credentials
 
 | Role | Email | Password | Assigned Projects Scope |
 |---|---|---|---|
-| **Manager** | `manager@company.com` | `password123` | All projects (Apex, Nova, Orbit, Legacy) + full admin control |
-| **Member 1 (Senior Dev)** | `sarah@company.com` | `password123` | Assigned to **Apex Fintech** and **Orbit Logistics** |
-| **Member 2 (Frontend Dev)** | `david@company.com` | `password123` | Assigned to **Apex Fintech** and **Nova Health** |
-| **Member 3 (QA & DevOps)** | `elena@company.com` | `password123` | Assigned to **Nova Health** and **Orbit Logistics** |
+| **Manager** | `manager@company.com` | `password123` | All projects (Fintech, Health, Logistics, Legacy) + full admin control |
+| **Member 1 (Lead Engineer)** | `sarah@company.com` | `password123` | Assigned to **Fintech Payments Portal** and **Global Logistics Tracker** |
+| **Member 2 (Frontend Dev)** | `david@company.com` | `password123` | Assigned to **Fintech Payments Portal** and **Health Telemed App** |
+| **Member 3 (QA & DevOps)** | `elena@company.com` | `password123` | Assigned to **Health Telemed App** and **Global Logistics Tracker** |
 
 ## Stack
 
 | Layer | What you used | Why |
 |---|---|---|
-| **Frontend** | React 18, Next.js 14 App Router, Tailwind CSS, Lucide React Icons | Modern, reactive UI with responsive layout, instant tab switching, dual Table/Kanban views, and zero heavy UI framework lock-in. |
-| **Backend** | Next.js 14 API Route Handlers (Node.js & TypeScript), `jose` (JWT) | Type-safe unified full-stack architecture with server-enforced RBAC, isolated state machine engine, and per-item bulk action validation. |
-| **Database** | Prisma ORM with SQLite (PostgreSQL compatible) | Zero-friction local portability, ACID transactions (`prisma.$transaction`), relational integrity, and seamless deployment to Supabase/Render. |
+| **Frontend** | React 18, Next.js 14 App Router, Tailwind CSS, Lucide React Icons | Modern, reactive UI with responsive layout, instant tab switching, dual Table/Kanban views, Dark/Light mode, and zero heavy UI framework lock-in. |
+| **Backend** | Next.js 14 API Route Handlers (Node.js & TypeScript), `jose` (JWT), Google OAuth 2.0 | Type-safe unified full-stack architecture with server-enforced RBAC, isolated state machine engine, and per-item bulk action validation. |
+| **Database** | Prisma ORM 5 with PostgreSQL (Supabase) / SQLite | Zero-friction local portability, ACID transactions (`prisma.$transaction`), relational integrity, and seamless deployment to Supabase/Render. |
 | **Hosting** | Vercel / Render / Node.js Serverless | Free tier support with instant edge routing and environment variable security. |
 
 ## Goal checklist
@@ -37,8 +39,8 @@ Mark each honestly. Partial is fine — say what is partial.
 
 | # | Goal | Status | Notes |
 |---|------|--------|-------|
-| 1 | **Accounts and roles** | **Done** | Email & password auth (bcrypt + JWT in HTTP-only cookies). Managers can create/archive projects, edit membership, and delete tasks. Members only see their assigned projects. Server-enforced RBAC. |
-| 2 | **Projects** | **Done** | Projects have unique short keys (e.g. `APEX`, `NOVA`), names, descriptions, and owners. Projects can be archived and restored, hiding them from default views without destroying tasks. |
+| 1 | **Accounts and roles** | **Done** | Email & password auth (bcrypt + JWT in HTTP-only cookies) + Google OAuth 2.0. Managers can create/archive projects, edit membership, and delete tasks. Members only see their assigned projects. Server-enforced RBAC. |
+| 2 | **Projects** | **Done** | Projects have unique short keys (e.g. `FINTECH`, `HEALTH`), names, descriptions, and owners. Projects can be archived and restored, hiding them from default views without destroying tasks. |
 | 3 | **Tasks inside projects** | **Done** | Every task belongs to exactly one project with title, description, priority, optional due date, and blocking relationships (`blocked_by` tasks in same project). Tasks can be created, edited, and deleted (manager only). |
 | 4 | **A task lifecycle with rules** | **Done** | State machine: `Backlog` → `In Progress` → `In Review` → `Done`. `Blocked` allowed only from `In Progress` or `In Review`. Unblocking restores `previousStatus`. Reopening supported. Server strictly rejects moving to `Done` if blocking tasks are unfinished and rejects illegal jumps (e.g. Backlog straight to Done). Interface only displays legal moves. |
 | 5 | **Assignment** | **Done** | Multi-assignee support per task. Only project members can be assigned. Removing a member from a project automatically unassigns them from all project tasks and logs an immutable audit event. Global "My Tasks" view consolidates all assigned work across projects. |
@@ -54,7 +56,7 @@ Mark each honestly. Partial is fine — say what is partial.
 - Architecture, Schema & State Machine Design: 2.5 hours
 - Core Backend APIs & RBAC Middleware: 2.5 hours
 - Compound Endpoints (Bulk Reporting, Alert Resets, Unassignment Automation): 2.5 hours
-- Frontend Development (Dashboard, Projects, Tasks Table & Kanban, Modals, Role Switcher): 3.5 hours
+- Frontend Development (Dashboard, Projects, Tasks Table & Kanban, Modals, Role Switcher, Dark/Light Mode): 3.5 hours
 - Verification Testing, Seeding & Documentation: 2.0 hours
 
 ## What would you do next, with another 12 hours?
