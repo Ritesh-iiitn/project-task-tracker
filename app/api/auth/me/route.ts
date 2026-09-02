@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     const user = await getSessionUser(req);
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ user: null, message: 'Not authenticated' }, { status: 200 });
     }
 
     // Get user's accessible project IDs
@@ -28,6 +30,6 @@ export async function GET(req: NextRequest) {
     });
   } catch (error: any) {
     console.error('Me endpoint error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error', user: null }, { status: 500 });
   }
 }
