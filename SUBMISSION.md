@@ -5,7 +5,7 @@ Fill this in and commit it. This is the first file we open.
 ## Links
 
 - **GitHub repository:** https://github.com/Ritesh-iiitn/project-task-tracker-
-- **Live application:** https://pulsetrack-services.vercel.app (or `http://localhost:3000` locally)
+- **Live application:** https://project-task-tracker-eta.vercel.app
 
 ## Notes for the reviewer
 
