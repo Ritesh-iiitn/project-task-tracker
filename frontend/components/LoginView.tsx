@@ -76,6 +76,22 @@ export default function LoginView() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const urlError = params.get('error');
+      if (urlError) {
+        if (urlError === 'google_auth_cancelled') {
+          setError('Google authentication was cancelled.');
+        } else if (urlError === 'token_exchange_failed') {
+          setError('Google token exchange failed. Check Authorized redirect URIs in Google Cloud Console.');
+        } else {
+          setError(`Google Sign-In notice: ${decodeURIComponent(urlError)}`);
+        }
+      }
+    }
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
