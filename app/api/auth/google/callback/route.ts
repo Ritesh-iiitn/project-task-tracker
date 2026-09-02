@@ -4,14 +4,25 @@ import { hashPassword, signToken } from '@/backend/auth/auth.service';
 
 export const dynamic = 'force-dynamic';
 
+function getRedirectUri(req: NextRequest): string {
+  const host = req.headers.get('x-forwarded-host') || req.headers.get('host') || req.nextUrl.host;
+  const proto = req.headers.get('x-forwarded-proto') || (host.includes('localhost') ? 'http' : 'https');
+  const origin = `${proto}://${host}`;
+  return `${origin}/api/auth/google/callback`;
+}
+
 export async function GET(req: NextRequest) {
+  const host = req.headers.get('x-forwarded-host') || req.headers.get('host') || req.nextUrl.host;
+  const proto = req.headers.get('x-forwarded-proto') || (host.includes('localhost') ? 'http' : 'https');
+  const origin = `${proto}://${host}`;
+
   try {
     const code = req.nextUrl.searchParams.get('code');
     const stateParam = req.nextUrl.searchParams.get('state');
     const errorParam = req.nextUrl.searchParams.get('error');
 
     if (errorParam || !code) {
-      return NextResponse.redirect(`${req.nextUrl.origin}/?error=google_auth_cancelled`);
+      return NextResponse.redirect(`${origin}/?error=google_auth_cancelled`);
     }
 
     let role = 'member';
@@ -28,9 +39,7 @@ export async function GET(req: NextRequest) {
 
     const clientId = process.env.GOOGLE_CLIENT_ID;
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-    const redirectUri =
-      process.env.GOOGLE_REDIRECT_URI ||
-      `${req.nextUrl.origin}/api/auth/google/callback`;
+    const redirectUri = getRedirectUri(req);
 
     // 1. Exchange authorization code for Google access token
     const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
@@ -49,7 +58,7 @@ export async function GET(req: NextRequest) {
 
     if (!tokenRes.ok || !tokenData.access_token) {
       console.error('Google token exchange error:', tokenData);
-      return NextResponse.redirect(`${req.nextUrl.origin}/?error=token_exchange_failed`);
+      return NextResponse.redirect(`${origin}/?error=token_exchange_failed`);
     }
 
     // 2. Fetch Google user profile identity
@@ -60,7 +69,7 @@ export async function GET(req: NextRequest) {
     const googleUser = await userRes.json();
 
     if (!googleUser.email) {
-      return NextResponse.redirect(`${req.nextUrl.origin}/?error=no_email_returned`);
+      return NextResponse.redirect(`${origin}/?error=no_email_returned`);
     }
 
     const cleanEmail = googleUser.email.toLowerCase().trim();
@@ -96,7 +105,7 @@ export async function GET(req: NextRequest) {
     const token = await signToken(authUser);
 
     // 5. Redirect to Dashboard with JWT cookie
-    const response = NextResponse.redirect(`${req.nextUrl.origin}/`);
+    const response = NextResponse.redirect(`${origin}/`);
     response.cookies.set('auth_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -108,6 +117,6 @@ export async function GET(req: NextRequest) {
     return response;
   } catch (err) {
     console.error('Google OAuth callback error:', err);
-    return NextResponse.redirect(`${req.nextUrl.origin}/?error=server_oauth_error`);
+    return NextResponse.redirect(`${origin}/?error=server_oauth_error`);
   }
 }

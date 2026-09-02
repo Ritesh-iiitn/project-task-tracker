@@ -2,15 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
+function getRedirectUri(req: NextRequest): string {
+  const host = req.headers.get('x-forwarded-host') || req.headers.get('host') || req.nextUrl.host;
+  const proto = req.headers.get('x-forwarded-proto') || (host.includes('localhost') ? 'http' : 'https');
+  const origin = `${proto}://${host}`;
+  return `${origin}/api/auth/google/callback`;
+}
+
 export async function GET(req: NextRequest) {
   const clientId = process.env.GOOGLE_CLIENT_ID;
-  const redirectUri =
-    process.env.GOOGLE_REDIRECT_URI ||
-    `${req.nextUrl.origin}/api/auth/google/callback`;
+  const redirectUri = getRedirectUri(req);
 
-  // If Google OAuth credentials are not configured, return an informational response or redirect to sign-in with query
+  // If Google OAuth credentials are not configured
   if (!clientId || clientId.includes('your-google-client-id')) {
-    // Redirect back to app with an info param so frontend can open the Google profile dialog
     return NextResponse.redirect(`${req.nextUrl.origin}/?google_oauth_info=config_required`);
   }
 
