@@ -165,3 +165,17 @@ sequenceDiagram
 4. **External Auth Provider Lock-In**
    - *Decision*: We built a self-contained JWT engine alongside official Google Cloud OAuth 2.0.
    - *Rationale*: Guarantees 100% local zero-config evaluation while retaining standard Google cloud sign-in capabilities.
+
+---
+
+## E2E Role Verification & Security Matrix
+
+All API route handlers enforce strict server-side scoping across 4 standard personas:
+
+| Persona | Role | Scope & Permissions | Server-Side Enforcement |
+|---|---|---|---|
+| **Alex Morgan** | Manager | Global Portfolio Scope | Can create/archive projects, add/remove members, delete tasks, and view all 4 client workspaces. |
+| **Sarah Chen** | Lead Engineer | Fintech & Logistics | Queries restricted to projects where `userId IN project_members`. Rejected from Health App. |
+| **David Kim** | Frontend Dev | Fintech & Health | Cannot view or modify tasks in Global Logistics Tracker. |
+| **Elena Rostova** | QA & DevOps | Health & Logistics | Strictly isolated from Fintech Payments Portal. |
+
