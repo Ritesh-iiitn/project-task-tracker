@@ -35,6 +35,20 @@ We structured the 12-hour project budget into five disciplined, iterative milest
 
 ---
 
+## Git Commit History & Phase Traceability
+
+The project was committed incrementally across 5 distinct milestone sessions:
+
+| Milestone Session | Focus & Deliverables | Commits |
+|---|---|---|
+| **Session 1: Scaffolding, Architecture & Domain Model** | Project initialization (Next.js, TypeScript, Tailwind), Prisma relational schema design, database constraints, initial seed scripts. | `00f723b`, `3737863` |
+| **Session 2: Backend Core Engine & RBAC Enforcement** | State machine transition engine (`lib/state-machine.ts`), server-side RBAC validation, project & task CRUD APIs. | `767e0cb`, `db46dca` |
+| **Session 3: Complex Business Rules & Compound Endpoints** | Bulk operations (`/api/tasks/bulk`), blocker dependency checks, overdue alert evaluation, capacity metrics computation. | `767e0cb`, `cd14dbc` |
+| **Session 4: Frontend UI/UX & Role-Based Views** | Executive dashboard, Kanban board & table toggle, Task Detail drawer with transition controls, Rapid Role Switcher, light/dark themes. | `6e5b931`, `9bea9de`, `537f6f8`, `a61ab5d`, `65ff45f` |
+| **Session 5: Cloud Deployment, Auth Polish & Verification** | E2E demo personas verification suite, enriched database seeds, architectural documentation, and production deployment. | `2716622`, `ddc6ca2`, `f445e98`, `337fd3d`, `43b1439` |
+
+---
+
 ## What order did you build in, and why that order?
 
 1. **Schema & State Machine First**:
