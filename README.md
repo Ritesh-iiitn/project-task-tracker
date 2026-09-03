@@ -6,7 +6,7 @@
 [![Prisma ORM](https://img.shields.io/badge/Prisma-5.22-2d3748?style=flat-square&logo=prisma)](https://www.prisma.io/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Supabase-336791?style=flat-square&logo=postgresql)](https://supabase.com/)
 [![Google OAuth 2.0](https://img.shields.io/badge/Google_Auth-OAuth_2.0-EA4335?style=flat-square&logo=google)](https://cloud.google.com/)
-[![Tests Passing](https://img.shields.io/badge/Tests-14%2F14_Passing-emerald?style=flat-square&logo=checkmarx)](test/lifecycle.test.ts)
+[![Tests Passing](https://img.shields.io/badge/Tests-23%2F23_Passing-emerald?style=flat-square&logo=checkmarx)](test/lifecycle.test.ts)
 
 > **Assignment 01 — Project & Task Tracking System**  
 > A production-grade web application engineered for professional services companies running multiple simultaneous client engagements. Built with strict server-enforced business rules, a deterministic state machine, blocker dependency enforcement, and immutable audit logging.

@@ -11,7 +11,7 @@ Fill this in and commit it. This is the first file we open.
 
 - **Instant 1-Click Role Switcher**: A fast role switcher dropdown is embedded in both the top navigation header and the login page. This allows you to switch between the Manager role (`Alex Morgan`) and any regular Member role (`Sarah Chen`, `David Kim`, `Elena Rostova`) in one click without manually typing credentials each time.
 - **Self-Contained & Cloud Ready Database**: The repository is fully configured with Prisma ORM and supports both local zero-config SQLite and cloud PostgreSQL (Supabase). It boots up immediately with `npm run dev`.
-- **Automated Test Suite**: Run `npm test` to execute the automated verification test suite verifying all 14 lifecycle state transitions, blocking dependency rules, and invalid jump rejections.
+- **Automated Test Suite**: Run `npm test` to execute the full automated verification suite: 14 lifecycle state machine transition tests (`test/lifecycle.test.ts`) + 9 E2E persona permission tests (`test/e2e-demo-accounts.test.ts`).
 - **Dark & Light Mode**: Built-in interactive theme switcher toggle (Sun/Moon button) available both on the landing page and inside the workspace.
 - **Google Cloud OAuth 2.0**: Full Google authentication flow with Google Cloud Console credentials and account selector support.
 
